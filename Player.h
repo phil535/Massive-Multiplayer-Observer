@@ -15,6 +15,9 @@ class Player
 
     Player(const int & pos_x, const int & pos_y, const int & dir_x, const int & dir_y);
 
+    const Position & getPosition(void) {return position_;}
+    const Position & getDirection(void) {return direction_;}
+
   private:
 
     Position position_;
