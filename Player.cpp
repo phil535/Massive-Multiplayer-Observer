@@ -4,6 +4,12 @@
 
 size_t Player::object_counter_;
 
+std::ostream &operator<<(std::ostream &stream, const Player &rhs)
+{
+  stream << "[" << rhs.getId() << "] pos" << rhs.getPosition() << ", dir" << rhs.getDirection();
+  return stream;
+}
+
 Player::Player(void) : id_(object_counter_++)
 {
   Position board_size = Game::instance().getBoardSize();

@@ -2,6 +2,8 @@
 #ifndef MASSIVE_MULTIPLAYER_OBSERVER_POSITION_H
 #define MASSIVE_MULTIPLAYER_OBSERVER_POSITION_H
 
+#include <ostream>
+
 class Position
 {
   public:
@@ -15,6 +17,8 @@ class Position
 
     const int &getY() const
     { return pos_y_; }
+
+    friend std::ostream &operator<<(std::ostream &stream, const Position &rhs);
 
   private:
 

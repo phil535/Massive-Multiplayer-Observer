@@ -12,3 +12,8 @@ Position::Position(const int & pos_x, const int & pos_y)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+std::ostream &operator<<(std::ostream &stream, const Position &rhs)
+{
+  stream << "(" << rhs.pos_x_ << "," << rhs.pos_y_ << ")";
+  return stream;
+}
