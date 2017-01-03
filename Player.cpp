@@ -25,3 +25,16 @@ Player::Player(const int & pos_x, const int & pos_y, const int & dir_x, const in
     : id_(object_counter_++), position_(pos_x, pos_y),
       direction_(dir_x, dir_y)
 {}
+
+Player & Player::operator++(void)
+{
+  Position board_size = Game::instance().getBoardSize();
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+Player & Player::operator--(void)
+{
+
+}

@@ -81,9 +81,9 @@ int Game::run(const std::vector<const char *> &args)
 
   cout << "Game::run..." << endl;
 
+  // Add initial players.
   while( init_player_cnt-- )
-  {
-  }
+    Game::instance().addPlayer();
 
   Position tst = RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize());
 
@@ -117,6 +117,7 @@ int Game::run(const std::vector<const char *> &args)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+
 void Game::addPlayer(Position position, Position direction)
 {
   std::unique_ptr<Player> new_player(new Player(position.getX(), position.getY(), direction.getX(), direction.getY()));
@@ -126,6 +127,17 @@ void Game::addPlayer(Position position, Position direction)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+
+void Game::addPlayer(void)
+{
+  std::unique_ptr<Player> new_player(new Player());
+
+  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void Game::removePlayer(size_t id)
 {
   players_.erase(id);

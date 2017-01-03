@@ -33,6 +33,8 @@ class Game
     static void update();
 
     void addPlayer(Position pos, Position direction);
+    void addPlayer(void);
+
 
     void removePlayer(size_t id);
 

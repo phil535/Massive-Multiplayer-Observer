@@ -19,6 +19,9 @@ class Player
     const Position & getPosition(void) {return position_;}
     const Position & getDirection(void) {return direction_;}
 
+    Player &operator++(void);
+    Player &operator--(void);
+
     inline size_t getId()
     { return id_; }
 
