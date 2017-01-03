@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 RandomNumberGenerator &RandomNumberGenerator::instance()
 {
   static RandomNumberGenerator random_number_generator_singleton;
@@ -10,14 +11,12 @@ RandomNumberGenerator &RandomNumberGenerator::instance()
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-
 RandomNumberGenerator::RandomNumberGenerator()
 {
   std::srand(std::time(0));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-
 Position RandomNumberGenerator::getRandomPosition(const Position &max) const
 {
 
@@ -26,6 +25,7 @@ Position RandomNumberGenerator::getRandomPosition(const Position &max) const
   return Position(std::rand() % (max.getX() - 1), std::rand() % (max.getY() - 1));
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 Position RandomNumberGenerator::getRandomDirection() const
 {
   return Position(std::rand() % 3 - 1, std::rand() % 3 - 1);

@@ -9,11 +9,11 @@
 using std::cout;
 using std::endl;
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 Game::Game() : running_(false)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-
 Game &Game::instance()
 {
   static Game gameSingleton;
@@ -21,7 +21,6 @@ Game &Game::instance()
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-
 int Game::run(const std::vector<const char *> &args)
 {
   Game::instance().running_ = true;
@@ -84,14 +83,14 @@ int Game::run(const std::vector<const char *> &args)
 
   cout << "Game::run..." << endl;
 
+  // start websocketserver on port 8888
+  std::thread websocket_thread(std::bind(&WebsocketServer::run, &Game::instance().websocket_server_, 8888));
+
   // Add initial players.
   while( init_player_cnt-- )
     Game::instance().addPlayer();
 
-  Position tst = RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize());
-
-  cout << "Test-position is [" << tst.getX() << "," << tst.getY() << "]." << endl;
-
+  // start gameloop
   std::thread update_thread(Game::update);
 
   for (; Game::instance().running_;)
@@ -115,18 +114,21 @@ int Game::run(const std::vector<const char *> &args)
       for (auto &p : Game::instance().players_)
         std::cout << *(p.second) << std::endl;
     }
-
   }
 
   Game::instance().players_.clear();
 
+  // stop gameloop
   update_thread.join();
+
+  // stop websocketserver
+  Game::instance().websocket_server_.stop();
+  websocket_thread.join();
 
   return 0;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-
 void Game::addPlayer(Position position, Position direction)
 {
   std::unique_ptr<Player> new_player(new Player(position.getX(), position.getY(), direction.getX(), direction.getY()));
@@ -136,7 +138,6 @@ void Game::addPlayer(Position position, Position direction)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-
 void Game::addPlayer(void)
 {
   std::unique_ptr<Player> new_player(new Player());
@@ -146,7 +147,6 @@ void Game::addPlayer(void)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-
 void Game::removePlayer(size_t id)
 {
   players_.erase(id);
@@ -166,6 +166,7 @@ void Game::update()
   }
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 void Game::save(void)
 {
   std::ofstream log_file("save.log");
@@ -175,8 +176,8 @@ void Game::save(void)
     log_file << *(p.second) << "\n";
   log_file.close();
 }
-/*--------------------------------------------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 void Game::setBoardSize(const Position set_val)
 {
   board_size_ = set_val;
