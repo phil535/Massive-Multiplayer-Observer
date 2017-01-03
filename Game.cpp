@@ -105,8 +105,6 @@ int Game::run(const std::vector<const char *> &args)
     }
     else if (input_buffer == "add")
     {
-      std::cout << RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()) << std::endl;
-      std::cout << Game::instance().getBoardSize() << std::endl;
       Game::instance().addPlayer(RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()),
                                  RandomNumberGenerator::instance().getRandomDirection());
     }
@@ -151,11 +149,16 @@ void Game::removePlayer(size_t id)
   players_.erase(id);
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 void Game::update()
 {
   for (; Game::instance().running_;)
   {
-    // update player
+
+
+    // move players
+    for (auto &p : Game::instance().players_)
+      (p.second)->move();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(Game::instance().UPDATE_CYCLE_MS));
   }
