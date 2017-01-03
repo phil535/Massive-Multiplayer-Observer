@@ -27,6 +27,7 @@ int Game::run(const std::vector<const char *> &args)
   // todo: start implementation here!
 
   int init_player_cnt = 0;
+  Game::instance().setBoardSize();
 
   for( std::vector<const char *>::const_iterator itr = args.begin(); itr != args.end(); ++itr )
   {
@@ -104,6 +105,8 @@ int Game::run(const std::vector<const char *> &args)
     }
     else if (input_buffer == "add")
     {
+      std::cout << RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()) << std::endl;
+      std::cout << Game::instance().getBoardSize() << std::endl;
       Game::instance().addPlayer(RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()),
                                  Position(1, 1));
     }
