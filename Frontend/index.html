@@ -11,49 +11,34 @@
 
 
     <script type="text/javascript">
-        function onFileChange(){
-            console.log('File changed to ');
-            console.log($('#fileinput').prop('files')[0]);
-        }
-        $('#fileinput').on("change", onFileChange);
+
+        var game = undefined;
+
+        window.onload = function() {
+
+            var connection = new WebSocket('ws://localhost:8888');
+
+            connection.onmessage = function (e) {
+                var playerData = JSON.parse(e.data);
+
+                if(game == undefined){
+
+                    game = new Phaser.Game(playerData.boardwidth, playerData.boardheight, Phaser.AUTO, '', { preload: preload, create: create });
+
+                    function preload () {
+                        game.load.image('logo', 'phaser.png');
+                    }
+                    function create () {
+                        var logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
+                        logo.anchor.setTo(0.5, 0.5);
+                    }
 
 
 
-        var connection = new WebSocket('ws://localhost:8888');
-        console.log(connection);
-
-        connection.onmessage = function (e) {
-            console.log('Server: ' + e.data);
+                }
+                console.log(playerData)
+            };
         };
-
-        connection.onopen = function () {
-            connection.send('Ping'); // Send the message 'Ping' to the server
-        };
-
-
-
-    window.onload = function() {
-
-        //  Note that this html file is set to pull down Phaser 2.5.0 from the JS Delivr CDN.
-        //  Although it will work fine with this tutorial, it's almost certainly not the most current version.
-        //  Be sure to replace it with an updated version before you start experimenting with adding your own code.
-
-        var game = new Phaser.Game(1024, 1024, Phaser.AUTO, '', { preload: preload, create: create });
-
-        function preload () {
-
-            game.load.image('logo', 'phaser.png');
-
-        }
-
-        function create () {
-
-            var logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
-            logo.anchor.setTo(0.5, 0.5);
-
-        }
-
-    };
 
     </script>
 
