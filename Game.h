@@ -10,7 +10,7 @@ class Game
 
     static int run(const std::vector<const char *> &args);
 
-    const Position & getBoardSize(void) {return board_size_;}
+    const Position getBoardSize(void) {return board_size_;}
 
   private:
 
@@ -22,7 +22,7 @@ class Game
 
     Position board_size_;
 
-    void setBoardSize( const Position & set_val = Position(1024, 1024));
+    void setBoardSize( const Position set_val = Position(1024, 1024));
 };
 
 

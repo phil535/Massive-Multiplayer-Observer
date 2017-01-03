@@ -21,11 +21,11 @@ Game &Game::instance()
 int Game::run(const std::vector<const char *> &args)
 {
   // todo: start implementation here!
+
   Game::instance().setBoardSize();
   cout << "Game::run..." << endl;
 
-  Position max = Game::instance().getBoardSize();
-  Position tst = RandomNumberGenerator::instance().getRandomPosition(max);
+  Position tst = RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize());
 
   cout << "Test-position is [" << tst.getX() << "," << tst.getY() << "]." << endl;
 
@@ -34,7 +34,7 @@ int Game::run(const std::vector<const char *> &args)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void Game::setBoardSize(const Position & set_val)
+void Game::setBoardSize(const Position set_val)
 {
   board_size_ = set_val;
 }

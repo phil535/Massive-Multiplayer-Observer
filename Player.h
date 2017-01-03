@@ -9,13 +9,16 @@ class Player
 {
   public:
 
-    Player(const int & pos_x, const int & pos_y) : position_(pos_x, pos_y) {}
+    Player();
 
-    Player() {}
+    Player(const int & pos_x, const int & pos_y);
+
+    Player(const int & pos_x, const int & pos_y, const int & dir_x, const int & dir_y);
 
   private:
 
     Position position_;
+    Position direction_;
 
 
 };

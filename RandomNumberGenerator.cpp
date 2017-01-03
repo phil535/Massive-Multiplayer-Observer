@@ -9,10 +9,14 @@ RandomNumberGenerator &RandomNumberGenerator::instance()
   return random_number_generator_singleton;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 RandomNumberGenerator::RandomNumberGenerator()
 {
   std::srand(std::time(0));
 }
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 Position RandomNumberGenerator::getRandomPosition(const Position &max) const
 {
