@@ -7,6 +7,7 @@
 
 class Player
 {
+    static size_t object_counter_;
   public:
 
     Player();
@@ -18,10 +19,14 @@ class Player
     const Position & getPosition(void) {return position_;}
     const Position & getDirection(void) {return direction_;}
 
+    inline size_t getId()
+    { return id_; }
+
   private:
 
     Position position_;
     Position direction_;
+    size_t id_;
 
 
 };

@@ -88,6 +88,21 @@ int Game::run(const std::vector<const char *> &args)
   return 0;
 }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+void Game::addPlayer(Position position, Position direction)
+{
+  std::unique_ptr<Player> new_player(new Player(position.getX(), position.getY(), direction.getX(), direction.getY()));
+
+  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+void Game::removePlayer(size_t id)
+{
+  players_.erase(id);
+}
+
 void Game::update()
 {
   for (; Game::instance().running_;)

@@ -4,8 +4,11 @@
 #include <vector>
 #include <map>
 #include <chrono>
+#include <memory>
+
 #include "Position.h"
 #include "Player.h"
+#include "RandomNumberGenerator.h"
 
 class Game
 {
@@ -25,13 +28,17 @@ class Game
 
     Game &operator=(const Game &rhs);
 
-    void setBoardSize( const Position & set_val = Position(1024, 1024));
+    void setBoardSize(const Position set_val = Position(1024, 1024));
 
     static void update();
 
+    void addPlayer(Position pos, Position direction);
+
+    void removePlayer(size_t id);
+
     bool running_;
     Position board_size_;
-    std::map<size_t, Player> players_;
+    std::map<size_t, std::unique_ptr<Player>> players_;
 };
 
 
