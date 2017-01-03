@@ -2,9 +2,14 @@
 #define MASSIVE_MULTIPLAYER_OBSERVER_GAME_H
 
 #include <vector>
+#include <map>
+#include <chrono>
 #include "Position.h"
+#include "Player.h"
+
 class Game
 {
+    const int UPDATE_CYCLE_MS = 100;
   public:
     static Game &instance();
 
@@ -20,9 +25,13 @@ class Game
 
     Game &operator=(const Game &rhs);
 
-    Position board_size_;
-
     void setBoardSize( const Position & set_val = Position(1024, 1024));
+
+    static void update();
+
+    bool running_;
+    Position board_size_;
+    std::map<size_t, Player> players_;
 };
 
 
