@@ -5,6 +5,7 @@
 
 class Game
 {
+
   public:
     static Game &instance();
 
@@ -16,6 +17,7 @@ class Game
     Game(const Game &rhs);
 
     Game &operator=(const Game &rhs);
+
 };
 
 
