@@ -81,7 +81,14 @@ int Game::run(const std::vector<const char *> &args)
       Game::instance().running_ = false;
       break;
     }
+    else if (input_buffer == "add")
+    {
+      Game::instance().addPlayer(RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()),
+                                 Position(1, 1));
+    }
   }
+
+  Game::instance().players_.clear();
 
   update_thread.join();
 
