@@ -3,6 +3,8 @@
 #include <string>
 #include "Game.h"
 #include "RandomNumberGenerator.h"
+#include <iostream>
+#include <fstream>
 
 using std::cout;
 using std::endl;
@@ -113,6 +115,7 @@ int Game::run(const std::vector<const char *> &args)
       for (auto &p : Game::instance().players_)
         std::cout << *(p.second) << std::endl;
     }
+
   }
 
   Game::instance().players_.clear();
@@ -154,8 +157,7 @@ void Game::update()
 {
   for (; Game::instance().running_;)
   {
-
-
+    Game::instance().save();
     // move players
     for (auto &p : Game::instance().players_)
       (p.second)->move();
@@ -164,6 +166,15 @@ void Game::update()
   }
 }
 
+void Game::save(void)
+{
+  std::ofstream log_file("save.log");
+  log_file << "boardsize" << Game::instance().getBoardSize() << "\n";
+
+  for (auto &p : Game::instance().players_)
+    log_file << *(p.second) << "\n";
+  log_file.close();
+}
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void Game::setBoardSize(const Position set_val)

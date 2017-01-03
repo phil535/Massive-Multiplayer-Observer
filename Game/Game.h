@@ -35,7 +35,7 @@ class Game
     void addPlayer(Position pos, Position direction);
     void addPlayer(void);
 
-
+    void save(void);
     void removePlayer(size_t id);
 
     bool running_;
