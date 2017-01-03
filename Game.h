@@ -25,7 +25,7 @@ class Game
 
     Game &operator=(const Game &rhs);
 
-    void setBoardSize( const Position & set_val = Position(1024, 1024));
+    void setBoardSize( const Position set_val = Position(1024, 1024));
 
     static void update();
 

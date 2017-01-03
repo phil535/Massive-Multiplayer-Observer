@@ -26,11 +26,13 @@ int Game::run(const std::vector<const char *> &args)
 
   // todo: start implementation here!
 
+  int init_player_cnt = 0;
+
   for( std::vector<const char *>::const_iterator itr = args.begin(); itr != args.end(); ++itr )
   {
     if(std::string(*itr) == "--boardsize")
     {
-      if((itr + 1) != args.end())
+      if ((itr + 1) != args.end())
       {
         int board_width, board_height;
         try
@@ -39,7 +41,7 @@ int Game::run(const std::vector<const char *> &args)
           board_width = std::stoi(tmp_string_width);
           itr++;
 
-          if((itr + 1) != args.end())
+          if ((itr + 1) != args.end())
           {
             try
             {
@@ -49,20 +51,39 @@ int Game::run(const std::vector<const char *> &args)
               itr++;
               continue;
             }
-            catch (std::exception & e)
+            catch (std::exception &e)
             {}
           }
           Game::instance().setBoardSize(Position(board_width, board_width));
           continue;
         }
-        catch (std::exception & e)
+        catch (std::exception &e)
         {}
 
+      }
+    }
+    else if(std::string(*itr) == "--init-players")
+    {
+      if ((itr + 1) != args.end())
+      {
+        try
+        {
+          std::string tmp_string_player_cnt = std::string(*(itr + 1));
+          init_player_cnt = std::stoi(tmp_string_player_cnt);
+          itr++;
+          continue;
+        }
+        catch (std::exception &e)
+        {}
       }
     }
   }
 
   cout << "Game::run..." << endl;
+
+  while( init_player_cnt-- )
+  {
+  }
 
   Position tst = RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize());
 
