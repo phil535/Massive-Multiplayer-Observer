@@ -16,6 +16,7 @@ class RandomNumberGenerator
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
+  public:
     Position getRandomPosition(const Position &max) const;
     Position getRandomDirection() const;
 };

@@ -57,10 +57,10 @@ void WebsocketServer::onOpen(websocketpp::connection_hdl hdl)
   ss << "boardsize=" << Game::instance().getBoardSize() << "\n";
   server_.send(hdl, ss.str(), websocketpp::frame::opcode::text);
 
-  for(auto & x : Game::instance().)
+  /*for(auto & x : Game::instance().)
   {
 
-  }
+  }*/
 
 }
 

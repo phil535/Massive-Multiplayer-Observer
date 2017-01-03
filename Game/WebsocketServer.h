@@ -20,12 +20,15 @@ class WebsocketServer
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
+  public:
     void run(int port);
     void stop();
 
+  private:
     void onOpen(websocketpp::connection_hdl hdl);
     void onClose(websocketpp::connection_hdl hdl);
     void onMessage(websocketpp::connection_hdl hdl, websocketpp::server<websocketpp::config::asio>::message_ptr msg);
+  public:
     void broadcastMessage(std::string msg);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
