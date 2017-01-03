@@ -26,8 +26,7 @@ class Player
     inline size_t getId() const
     { return id_; }
 
-    Player &operator++(void);
-    Player &operator--(void);
+    void move(void);
 
     friend std::ostream &operator<<(std::ostream &stream, const Player &rhs);
 

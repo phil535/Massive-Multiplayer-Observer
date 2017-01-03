@@ -32,15 +32,40 @@ Player::Player(const int & pos_x, const int & pos_y, const int & dir_x, const in
       direction_(dir_x, dir_y)
 {}
 
-Player & Player::operator++(void)
-{
-  Position board_size = Game::instance().getBoardSize();
-
-}
-
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-Player & Player::operator--(void)
+void Player::move(void)
 {
+  Position board_size = Game::instance().getBoardSize();
+  int result_x = position_.getX();
+  int result_y = position_.getY();
 
+  if((position_.getX() + direction_.getX()) >= board_size.getX())
+  {
+    result_x = 0;
+  }
+  else if((position_.getX() + direction_.getX()) < 0 )
+  {
+    result_x = board_size.getX() - 1;
+  }
+  else
+  {
+    result_x = position_.getX() + direction_.getX();
+  }
+
+
+  if((position_.getY() + direction_.getY()) >= board_size.getY())
+  {
+    result_y = 0;
+  }
+  else if((position_.getY() + direction_.getY()) < 0 )
+  {
+    result_y = board_size.getY() - 1;
+  }
+  else
+  {
+    result_y = position_.getY() + direction_.getY();
+  }
+
+  position_ = Position(result_x, result_y);
 }

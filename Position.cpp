@@ -1,5 +1,6 @@
 
 #include "Position.h"
+#include "Game.h"
 
 Position::Position(void)
     :pos_x_(0), pos_y_(0)
