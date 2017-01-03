@@ -41,6 +41,7 @@ void WebsocketServer::run(int port)
 void WebsocketServer::stop()
 {
   server_.stop();
+  server_.get_io_service().stop();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -54,14 +55,15 @@ void WebsocketServer::onOpen(websocketpp::connection_hdl hdl)
   // update current state
   std::stringstream ss("");
 
-  ss << "boardsize=" << Game::instance().getBoardSize() << "\n";
-  server_.send(hdl, ss.str(), websocketpp::frame::opcode::text);
+  ss << "{\"boardwidth\": " << Game::instance().getBoardSize().getX()
+    << ", \"boardheight\": " << Game::instance().getBoardSize().getY() << ",\"players\":[" ;
 
   /*for(auto & x : Game::instance().)
   {
-
+    ss << x.getId()
   }*/
-
+  ss << "]}";
+  server_.send(hdl, ss.str(), websocketpp::frame::opcode::text);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

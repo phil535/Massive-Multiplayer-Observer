@@ -157,24 +157,12 @@ void Game::update()
 {
   for (; Game::instance().running_;)
   {
-    Game::instance().save();
     // move players
     for (auto &p : Game::instance().players_)
       (p.second)->move();
 
     std::this_thread::sleep_for(std::chrono::milliseconds(Game::instance().UPDATE_CYCLE_MS));
   }
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-void Game::save(void)
-{
-  std::ofstream log_file("save.log");
-  log_file << "boardsize" << Game::instance().getBoardSize() << "\n";
-
-  for (auto &p : Game::instance().players_)
-    log_file << *(p.second) << "\n";
-  log_file.close();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
