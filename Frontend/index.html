@@ -4,10 +4,20 @@
         <meta charset="UTF-8" />
         <title>Massive Multiplayer Observer!</title>
         <script src="js/phaser.min.js"></script>
+        <script src="js/jquery.min.js"></script>
     </head>
     <body>
+    <input type="file" id="fileinput">
+
 
     <script type="text/javascript">
+        function onFileChange(){
+            console.log('File changed to ');
+            console.log($('#fileinput').prop('files')[0]);
+        }
+        $('#fileinput').on("change", onFileChange);
+
+
 
     window.onload = function() {
 
@@ -15,7 +25,7 @@
         //  Although it will work fine with this tutorial, it's almost certainly not the most current version.
         //  Be sure to replace it with an updated version before you start experimenting with adding your own code.
 
-        var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create });
+        var game = new Phaser.Game(1024, 1024, Phaser.AUTO, '', { preload: preload, create: create });
 
         function preload () {
 
