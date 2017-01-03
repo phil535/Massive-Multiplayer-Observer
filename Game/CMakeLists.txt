@@ -16,6 +16,6 @@ set(SOURCE_FILES
     WebsocketServer.cpp
     WebsocketServer.h)
 
-include_directories(../../websocketpp)
+include_directories(../websocketpp)
 
 add_executable(Game ${SOURCE_FILES})
