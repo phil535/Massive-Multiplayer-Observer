@@ -1,21 +1,23 @@
 #include "RandomNumberGenerator.h"
 
+#include <cstdlib>
+#include <ctime>
+
 RandomNumberGenerator &RandomNumberGenerator::instance()
 {
   static RandomNumberGenerator random_number_generator_singleton;
   return random_number_generator_singleton;
 }
 
-RandomNumberGenerator::RandomNumberGenerator() : random_device_(), random_generator_(random_device_)
+RandomNumberGenerator::RandomNumberGenerator()
 {
+  std::srand(std::time(0));
 }
 
-Position RandomNumberGenerator::getRandomPosition(const Position &max)
+Position RandomNumberGenerator::getRandomPosition(const Position &max) const
 {
-  if (max.getX() <= 1 || max.getY() <= 1) return Position(0, 0);
 
-  std::uniform_int_distribution<> xDistribution(0, max.getX() - 1);
-  std::uniform_int_distribution<> yDistribution(0, max.getY() - 1);
+  if (max.getX() == 0 || max.getY() == 0) return Position(0, 0);
 
-  return Position(xDistribution(random_generator_), yDistribution(random_generator_));
+  return Position(std::rand() % (max.getX() - 1), std::rand() % (max.getY() - 1));
 }

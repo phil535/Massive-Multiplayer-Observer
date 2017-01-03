@@ -10,8 +10,11 @@ class Position
 
     Position(const int & pos_x, const int & pos_y);
 
-    const int & getX() {return pos_x_;}
-    const int & getY() {return pos_y_;}
+    const int &getX() const
+    { return pos_x_; }
+
+    const int &getY() const
+    { return pos_y_; }
 
   private:
 

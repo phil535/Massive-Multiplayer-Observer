@@ -1,15 +1,15 @@
 #ifndef MASSIVE_MULTIPLAYER_OBSERVER_RANDOMNUMBERGENERATOR_H
 #define MASSIVE_MULTIPLAYER_OBSERVER_RANDOMNUMBERGENERATOR_H
 
-#include <random>
+
 #include "Position.h"
 
 class RandomNumberGenerator
 {
   public:
-    RandomNumberGenerator &instance();
+    static RandomNumberGenerator &instance();
 
-    Position getRandomPosition() const;
+    Position getRandomPosition(const Position &max) const;
 
   private:
     RandomNumberGenerator();
@@ -17,11 +17,6 @@ class RandomNumberGenerator
     RandomNumberGenerator(const RandomNumberGenerator &rhs);
 
     RandomNumberGenerator &operator=(const RandomNumberGenerator &rhs);
-
-  private:
-    std::random_device random_device_;
-    std::mt19937 random_generator_;
-
 };
 
 
