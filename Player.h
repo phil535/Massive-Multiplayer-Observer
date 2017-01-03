@@ -2,8 +2,9 @@
 #ifndef MASSIVE_MULTIPLAYER_OBSERVER_PLAYER_H
 #define MASSIVE_MULTIPLAYER_OBSERVER_PLAYER_H
 
-#include <random>
+#include <ostream>
 #include "Position.h"
+
 
 class Player
 {
@@ -16,11 +17,16 @@ class Player
 
     Player(const int & pos_x, const int & pos_y, const int & dir_x, const int & dir_y);
 
-    const Position & getPosition(void) {return position_;}
-    const Position & getDirection(void) {return direction_;}
+    const Position &getPosition(void) const
+    { return position_; }
 
-    inline size_t getId()
+    const Position &getDirection(void) const
+    { return direction_; }
+
+    inline size_t getId() const
     { return id_; }
+
+    friend std::ostream &operator<<(std::ostream &stream, const Player &rhs);
 
   private:
 
