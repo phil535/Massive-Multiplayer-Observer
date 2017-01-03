@@ -108,7 +108,7 @@ int Game::run(const std::vector<const char *> &args)
       std::cout << RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()) << std::endl;
       std::cout << Game::instance().getBoardSize() << std::endl;
       Game::instance().addPlayer(RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()),
-                                 Position(1, 1));
+                                 RandomNumberGenerator::instance().getRandomDirection());
     }
     else if (input_buffer == "list")
     {

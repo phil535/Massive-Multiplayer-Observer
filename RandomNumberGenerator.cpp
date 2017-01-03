@@ -25,3 +25,8 @@ Position RandomNumberGenerator::getRandomPosition(const Position &max) const
 
   return Position(std::rand() % (max.getX() - 1), std::rand() % (max.getY() - 1));
 }
+
+Position RandomNumberGenerator::getRandomDirection() const
+{
+  return Position(std::rand() % 3 - 1, std::rand() % 3 - 1);
+}
