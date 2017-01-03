@@ -102,11 +102,33 @@ int Game::run(const std::vector<const char *> &args)
       Game::instance().running_ = false;
       break;
     }
+    else if (input_buffer == "add")
+    {
+      Game::instance().addPlayer(RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()),
+                                 Position(1, 1));
+    }
   }
+
+  Game::instance().players_.clear();
 
   update_thread.join();
 
   return 0;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+void Game::addPlayer(Position position, Position direction)
+{
+  std::unique_ptr<Player> new_player(new Player(position.getX(), position.getY(), direction.getX(), direction.getY()));
+
+  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+void Game::removePlayer(size_t id)
+{
+  players_.erase(id);
 }
 
 void Game::update()
