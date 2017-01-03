@@ -1,7 +1,3 @@
-//
-// Created by phil on 1/3/17.
-//
-
 #ifndef MASSIVE_MULTIPLAYER_OBSERVER_GAME_H
 #define MASSIVE_MULTIPLAYER_OBSERVER_GAME_H
 
@@ -9,11 +5,17 @@
 
 class Game
 {
-    const std::vector<const char *> &args_;
   public:
-    Game(const std::vector<const char *> &args);
+    static Game &instance();
 
-    int run();
+    static int run(const std::vector<const char *> &args);
+
+  private:
+    Game();
+
+    Game(const Game &rhs);
+
+    Game &operator=(const Game &rhs);
 };
 
 

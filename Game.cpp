@@ -1,15 +1,23 @@
-//
-// Created by phil on 1/3/17.
-//
-
+#include <iostream>
 #include "Game.h"
 
-Game::Game(const std::vector<const char *> &args) : args_(args)
+using std::cout;
+using std::endl;
+
+Game::Game()
 { }
 
-int Game::run()
+Game &Game::instance()
+{
+  static Game gameSingleton;
+  return gameSingleton;
+}
+
+int Game::run(const std::vector<const char *> &args)
 {
   // todo: start implementation here!
+
+  cout << "Game::run..." << endl;
 
   return 0;
 }
