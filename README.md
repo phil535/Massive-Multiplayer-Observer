@@ -35,3 +35,6 @@ Game &Game::instance()
 * Problem: 
 * Solution:
 * Consequences:
+
+## Dependencies to build
+* libboost-system-dev
