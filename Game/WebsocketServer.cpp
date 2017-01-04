@@ -8,9 +8,11 @@ using websocketpp::lib::lock_guard;
 
 WebsocketServer::WebsocketServer()
 {
+  server_.init_asio();
+
   // disable logging
-  server_.clear_access_channels(websocketpp::log::alevel::all);
-  server_.clear_error_channels(websocketpp::log::alevel::all);
+  //server_.clear_access_channels(websocketpp::log::alevel::all);
+  //server_.clear_error_channels(websocketpp::log::alevel::all);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -30,19 +32,23 @@ void WebsocketServer::run(int port)
   server_.set_message_handler(bind(&WebsocketServer::onMessage, this, _1, _2));
   server_.set_close_handler(bind(&WebsocketServer::onClose, this, _1));
 
-  server_.init_asio();
-  server_.listen(port);
-  server_.start_accept();
-
-  server_.run();
+  try
+  {
+    server_.listen(port);
+    server_.start_accept();
+    server_.run();
+  }
+  catch(const std::exception &e)
+  {
+    std::cout << e.what() << std::endl;
+  }
+  server_.stop_perpetual()
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void WebsocketServer::stop()
 {
-  server_.stop_listening();
   server_.stop();
-  server_.get_io_service().stop();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -53,24 +59,8 @@ void WebsocketServer::onOpen(websocketpp::connection_hdl hdl)
   // add new connection
   front_ends_.insert(hdl);
 
-  // update current state
-  std::stringstream ss("");
-
-  ss << "{\"boardwidth\": " << Game::instance().getBoardSize().getX()
-    << ", \"boardheight\": " << Game::instance().getBoardSize().getY() << ",\"players\":[" ;
-
-  auto &players = Game::instance().getPlayers();
-  for(auto p = players.begin(); p != players.end();p++)
-  {
-    if(p != players.begin())
-      ss << ", ";
-
-    ss << "{\"id\": " << p->second->getId()
-      << ",\"x\": " << p->second->getPosition().getX()
-      << ",\"y\": " << p->second->getPosition().getY() << "}";
-  }
-  ss << "]}";
-  server_.send(hdl, ss.str(), websocketpp::frame::opcode::text);
+  // update current players
+  server_.send(hdl, Game::instance().getJsonPlayerState(), websocketpp::frame::opcode::text);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

@@ -9,63 +9,60 @@
     <body>
     <script type="text/javascript">
 
+        // globals
         var game = undefined;
-        var gameData = undefined;
+        var players = [];
+        var WEBSOCKET_SERVER_LOCATION = 'ws://localhost:8888';
 
-        window.onload = function() {
-
-            var connection = new WebSocket('ws://localhost:8888');
-
-            function getPlayerById(id){
-                for(var index = 0; index < gameData.players.length; ++index){
-                    if(gameData.players[index].id == id)
-                        return gameData.players[index];
-                }
-                return undefined;
+        function getPlayerById(id){
+            for(var index = 0; index < players.length; ++index){
+                if(players[index].id == id)
+                    return players[index];
             }
+            return undefined;
+        }
+        function updatePlayer(id, x, y){
+            if(game == undefined) return undefined;
+            var player = getPlayerById(id);
+            if(player == undefined) {
+                player = {'id': id, 'sprite': game.add.graphics(x, y)};
+                player.sprite.beginFill(0xFFFF0B, 0.5);
+                player.sprite.drawCircle(0, 0, 50);
+                players.push(player);
+            }else{
+                player.sprite.position.x = x;
+                player.sprite.position.y = y;
+            }
+        }
+        function parseMessage(msg){
+            if(msg == undefined || msg.players == undefined) return undefined;
+            for(var index = 0; index < msg.players.length; ++index) {
+                if(msg.players[index].id == undefined || msg.players[index].x == undefined || msg.players[index].y == undefined)
+                    return undefined;
+                updatePlayer(msg.players[index].id, msg.players[index].x, msg.players[index].y);
+            }
+        }
+        function removeAllPlayers(){
+            if(game == undefined) return undefined;
+            for(var index = 0; index < players.length; ++index){
+                players[index].sprite.destroy();
+            }
+            players = [];
+        }
+        $(document).ready(function(){
+            game = new Phaser.Game(800, 800, Phaser.AUTO, 'Massive Multiplayer Observer!', {create: initWebsocket});
+        });
+        function initWebsocket(){
+            var connection = new WebSocket(WEBSOCKET_SERVER_LOCATION);
 
-            connection.onmessage = function (e) {
-                if(game == undefined){
-                    gameData = JSON.parse(e.data);
-                    game = new Phaser.Game(gameData.boardwidth, gameData.boardheight, Phaser.AUTO, '', {create: createPlayer});
-
-                    function createPlayer(){
-                        for(var index = 0; index < gameData.players.length; ++index){
-                            var player = gameData.players[index];
-                            player.sprite = game.add.graphics(player.x, player.y);
-                            player.sprite.beginFill(0xFFFF0B, 0.5);
-                            player.sprite.drawCircle(0, 0, 50);
-                            console.log('[' + player.id + '] pos(' + player.x + ',' + player.y + ')');
-                        }
-                    }
-                }else{
-                    msg = JSON.parse(e.data);
-
-                    for(var index = 0; index < msg.players.length; ++index){
-                        var player = getPlayerById(msg.players[index].id);
-
-                        // player found
-                        if(player != undefined){
-                            // update position
-                            player.x = msg.players[index].x;
-                            player.y = msg.players[index].y;
-                            player.sprite.position.x = player.x;
-                            player.sprite.position.y = player.y;
-
-                        }else{
-                            player = {'id': msg.players[index].id, 'x': msg.players[index].x, 'y': msg.players[index].y, 'sprite': undefined};
-                            // add new player
-                            player.sprite = game.add.graphics(player.x, player.y);
-                            player.sprite.beginFill(0xFFFF0B, 0.5);
-                            player.sprite.drawCircle(0, 0, 50);
-                            gameData.players.push(player);
-                        }
-                    }
-                }
+            connection.onmessage = function(event) {
+                parseMessage(JSON.parse(event.data));
             };
-        };
-
+            connection.onclose = function(){
+                removeAllPlayers();
+                setTimeout(function(){initWebsocket()}, 3000);
+            };
+        }
     </script>
-
     </body>
 </html>

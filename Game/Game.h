@@ -27,6 +27,7 @@ class Game
 
   private:
     Game(const Game &rhs);
+    ~Game();
     Game &operator=(const Game &rhs);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +45,7 @@ class Game
     // Getter / Setter
   public:
     const Position getBoardSize(void) {return board_size_;}
-    std::map<size_t, std::unique_ptr<Player>> &getPlayers(){return players_;};
+    std::string getJsonPlayerState() const;
   private:
     void setBoardSize(const Position set_val = Position(1024, 1024));
 

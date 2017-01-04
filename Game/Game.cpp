@@ -14,6 +14,10 @@ Game::Game() : running_(false)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+Game::~Game()
+{}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 Game &Game::instance()
 {
   static Game gameSingleton;
@@ -162,24 +166,27 @@ void Game::update()
       (p.second)->move();
 
     // update current state
-    std::stringstream ss("");
-
-    ss << "{\"players\":[" ;
-    auto &players = Game::instance().getPlayers();
-    for(auto p = players.begin(); p != players.end();p++)
-    {
-      if(p != players.begin())
-        ss << ", ";
-
-      ss << "{\"id\": " << p->second->getId()
-      << ",\"x\": " << p->second->getPosition().getX()
-      << ",\"y\": " << p->second->getPosition().getY() << "}";
-    }
-    ss << "]}";
-    Game::instance().websocket_server_.broadcastMessage(ss.str());
+    Game::instance().websocket_server_.broadcastMessage(Game::instance().getJsonPlayerState());
 
     std::this_thread::sleep_for(std::chrono::milliseconds(Game::instance().UPDATE_CYCLE_MS));
   }
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+std::string Game::getJsonPlayerState() const
+{
+  std::stringstream ss("{\"players\":[");
+
+  for(auto p = Game::instance().players_.begin(); p != Game::instance().players_.end();p++)
+  {
+    if(p != Game::instance().players_.begin())
+      ss << ", ";
+
+    ss << "{\"id\": " << p->second->getId()
+    << ",\"x\": " << p->second->getPosition().getX()
+    << ",\"y\": " << p->second->getPosition().getY() << "}";
+  }
+  ss << "]}";
+  return ss.str();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
