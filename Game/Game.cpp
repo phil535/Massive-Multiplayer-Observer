@@ -174,7 +174,9 @@ void Game::update()
 /*--------------------------------------------------------------------------------------------------------------------*/
 std::string Game::getJsonPlayerState() const
 {
-  std::stringstream ss("{\"players\":[");
+  std::stringstream ss;
+
+  ss << "{\"players\":[";
 
   for(auto p = Game::instance().players_.begin(); p != Game::instance().players_.end();p++)
   {

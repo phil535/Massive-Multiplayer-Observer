@@ -15,12 +15,9 @@ class Player
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
-    const Position &getPosition(void) const
-    { return position_; }
-    const Position &getDirection(void) const
-    { return direction_; }
-    inline size_t getId() const
-    { return id_; }
+    inline const Position &getPosition(void) const{ return position_; }
+    inline const Position &getDirection(void) const{ return direction_; }
+    inline size_t getId() const{ return id_; }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods

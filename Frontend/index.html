@@ -8,10 +8,10 @@
     </head>
     <body>
     <script type="text/javascript">
-
         // globals
         var game = undefined;
         var players = [];
+        var x;
         var WEBSOCKET_SERVER_LOCATION = 'ws://localhost:8888';
 
         function getPlayerById(id){
@@ -21,13 +21,27 @@
             }
             return undefined;
         }
-        function updatePlayer(id, x, y){
+        function createPlayerSprite(text, x, y){
             if(game == undefined) return undefined;
+            var sprite = game.add.group();
+
+            circle = game.add.graphics(10, 10);
+            circle.beginFill((Math.random()*0xFFFFFF), 0.5);
+            circle.drawCircle(0, 0, 50);
+            circle.beginFill(0, 1);
+            circle.drawCircle(0, 0, 2);
+
+            sprite.add(circle);
+            sprite.add(game.make.text(0, -8, text, {font: "bold 11px Arial", fill: "red"}));
+
+            return sprite;
+        }
+        function updatePlayer(id, x, y){
+
             var player = getPlayerById(id);
             if(player == undefined) {
-                player = {'id': id, 'sprite': game.add.graphics(x, y)};
-                player.sprite.beginFill(0xFFFF0B, 0.5);
-                player.sprite.drawCircle(0, 0, 50);
+                player = {'id': id, 'sprite': undefined};
+                player.sprite = createPlayerSprite('ID: ' + id.toString(), x, y);
                 players.push(player);
             }else{
                 player.sprite.position.x = x;
@@ -50,7 +64,9 @@
             players = [];
         }
         $(document).ready(function(){
-            game = new Phaser.Game(800, 800, Phaser.AUTO, 'Massive Multiplayer Observer!', {create: initWebsocket});
+            game = new Phaser.Game(800, 800, Phaser.AUTO, 'Massive Multiplayer Observer!', {create: function(){
+                initWebsocket();
+            }});
         });
         function initWebsocket(){
             var connection = new WebSocket(WEBSOCKET_SERVER_LOCATION);

@@ -16,8 +16,10 @@ set(SOURCE_FILES
     RandomNumberGenerator.cpp
     RandomNumberGenerator.h
     WebsocketServer.cpp
-    WebsocketServer.h)
+    WebsocketServer.h
+    PlayerMovementSubjectObserver.cpp
+    PlayerMovementSubjectObserver.h)
 
-include_directories(../websocketpp)
+include_directories(dependencies/websocketpp)
 
 add_executable(Game ${SOURCE_FILES})
