@@ -21,5 +21,6 @@ set(SOURCE_FILES
     PlayerMovementSubjectObserver.h)
 
 include_directories(dependencies/websocketpp)
+include_directories(dependencies/glm)
 
 add_executable(Game ${SOURCE_FILES})

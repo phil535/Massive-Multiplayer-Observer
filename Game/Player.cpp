@@ -63,6 +63,23 @@ void Player::move(void)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+void Player::playerRegisterNotification(PlayerMovementSubject &player)
+{
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+void Player::playerUnregisterNotification(PlayerMovementSubject &player)
+{
+
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+void Player::playerMovementNotification(PlayerMovementSubject &player, glm::ivec2 &delta)
+{
+
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 std::ostream &operator<<(std::ostream &stream, const Player &rhs)
 {
   stream << "[" << rhs.getId() << "] pos" << rhs.getPosition() << ", dir" << rhs.getDirection();

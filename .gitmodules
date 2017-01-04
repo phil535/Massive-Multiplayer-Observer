@@ -1,6 +1,3 @@
-[submodule "websocketpp"]
-	path = websocketpp
-	url = https://github.com/zaphoyd/websocketpp.git
 [submodule "Game/dependencies/websocketpp"]
 	path = Game/dependencies/websocketpp
 	url = https://github.com/zaphoyd/websocketpp.git

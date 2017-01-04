@@ -3,8 +3,9 @@
 
 #include <ostream>
 #include "Position.h"
+#include "PlayerMovementSubjectObserver.h"
 
-class Player
+class Player : public PlayerMovementSubject, PlayerMovementObserver
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
@@ -23,6 +24,10 @@ class Player
     // Methods
     void move(void);
     friend std::ostream &operator<<(std::ostream &stream, const Player &rhs);
+
+    virtual void playerRegisterNotification(PlayerMovementSubject &player);
+    virtual void playerUnregisterNotification(PlayerMovementSubject &player);
+    virtual void playerMovementNotification(PlayerMovementSubject &player, glm::ivec2 &delta);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Member
