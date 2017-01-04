@@ -161,6 +161,23 @@ void Game::update()
     for (auto &p : Game::instance().players_)
       (p.second)->move();
 
+    // update current state
+    std::stringstream ss("");
+
+    ss << "{\"players\":[" ;
+    auto &players = Game::instance().getPlayers();
+    for(auto p = players.begin(); p != players.end();p++)
+    {
+      if(p != players.begin())
+        ss << ", ";
+
+      ss << "{\"id\": " << p->second->getId()
+      << ",\"x\": " << p->second->getPosition().getX()
+      << ",\"y\": " << p->second->getPosition().getY() << "}";
+    }
+    ss << "]}";
+    Game::instance().websocket_server_.broadcastMessage(ss.str());
+
     std::this_thread::sleep_for(std::chrono::milliseconds(Game::instance().UPDATE_CYCLE_MS));
   }
 }

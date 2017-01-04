@@ -44,6 +44,7 @@ class Game
     // Getter / Setter
   public:
     const Position getBoardSize(void) {return board_size_;}
+    std::map<size_t, std::unique_ptr<Player>> &getPlayers(){return players_;};
   private:
     void setBoardSize(const Position set_val = Position(1024, 1024));
 

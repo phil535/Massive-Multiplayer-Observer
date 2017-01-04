@@ -7,36 +7,61 @@
         <script src="js/jquery.min.js"></script>
     </head>
     <body>
-    <input type="file" id="fileinput">
-
-
     <script type="text/javascript">
 
         var game = undefined;
+        var gameData = undefined;
 
         window.onload = function() {
 
             var connection = new WebSocket('ws://localhost:8888');
 
-            connection.onmessage = function (e) {
-                var playerData = JSON.parse(e.data);
-
-                if(game == undefined){
-
-                    game = new Phaser.Game(playerData.boardwidth, playerData.boardheight, Phaser.AUTO, '', { preload: preload, create: create });
-
-                    function preload () {
-                        game.load.image('logo', 'phaser.png');
-                    }
-                    function create () {
-                        var logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
-                        logo.anchor.setTo(0.5, 0.5);
-                    }
-
-
-
+            function getPlayerById(id){
+                for(var index = 0; index < gameData.players.length; ++index){
+                    if(gameData.players[index].id == id)
+                        return gameData.players[index];
                 }
-                console.log(playerData)
+                return undefined;
+            }
+
+            connection.onmessage = function (e) {
+                if(game == undefined){
+                    gameData = JSON.parse(e.data);
+                    game = new Phaser.Game(gameData.boardwidth, gameData.boardheight, Phaser.AUTO, '', {create: createPlayer});
+
+                    function createPlayer(){
+                        for(var index = 0; index < gameData.players.length; ++index){
+                            var player = gameData.players[index];
+                            player.sprite = game.add.graphics(player.x, player.y);
+                            player.sprite.beginFill(0xFFFF0B, 0.5);
+                            player.sprite.drawCircle(0, 0, 50);
+                            console.log('[' + player.id + '] pos(' + player.x + ',' + player.y + ')');
+                        }
+                    }
+                }else{
+                    msg = JSON.parse(e.data);
+
+                    for(var index = 0; index < msg.players.length; ++index){
+                        var player = getPlayerById(msg.players[index].id);
+
+                        // player found
+                        if(player != undefined){
+                            // update position
+                            player.x = msg.players[index].x;
+                            player.y = msg.players[index].y;
+                            player.sprite.position.x = player.x;
+                            player.sprite.position.y = player.y;
+
+                        }else{
+                            player = {'id': msg.players[index].id, 'x': msg.players[index].x, 'y': msg.players[index].y, 'sprite': undefined};
+                            // add new player
+                            player.sprite = game.add.graphics(player.x, player.y);
+                            player.sprite.beginFill(0xFFFF0B, 0.5);
+                            player.sprite.drawCircle(0, 0, 50);
+                            gameData.players.push(player);
+                        }
+                    }
+                }
             };
         };
 
