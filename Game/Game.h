@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "WebsocketServer.h"
-#include "Position.h"
+#include "Types.h"
 #include "Player.h"
 #include "RandomNumberGenerator.h"
 
@@ -19,16 +19,14 @@ class Game
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
-  private:
-    Game(void);
-
   public:
     static Game &instance();
 
   private:
+    Game(void);
     Game(const Game &rhs);
-    ~Game();
     Game &operator=(const Game &rhs);
+    ~Game(void);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
@@ -44,16 +42,17 @@ class Game
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
   public:
-    const Position getBoardSize(void) {return board_size_;}
-    std::string getJsonPlayerState() const;
+    std::string getJsonPlayerState(void) const;
+
+    const Vec2i &getBoardSize(void) {return board_size_;}
   private:
-    void setBoardSize(const Position set_val = Position(1024, 1024));
+    void setBoardSize(Vec2i size = Vec2i(1024, 1024));
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Member
   private:
     bool running_;
-    Position board_size_;
+    Vec2i board_size_;
     std::map<size_t, std::unique_ptr<Player>> players_;
     WebsocketServer websocket_server_;
 };

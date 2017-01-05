@@ -11,8 +11,8 @@ WebsocketServer::WebsocketServer()
   server_.init_asio();
 
   // disable logging
-  //server_.clear_access_channels(websocketpp::log::alevel::all);
-  //server_.clear_error_channels(websocketpp::log::alevel::all);
+  server_.clear_access_channels(websocketpp::log::alevel::all);
+  server_.clear_error_channels(websocketpp::log::alevel::all);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

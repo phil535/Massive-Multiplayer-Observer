@@ -7,56 +7,54 @@ size_t Player::object_counter_;
 /*--------------------------------------------------------------------------------------------------------------------*/
 Player::Player(void) : id_(object_counter_++)
 {
-  Position board_size = Game::instance().getBoardSize();
-  position_ = RandomNumberGenerator::instance().getRandomPosition(board_size);
-  direction_ = RandomNumberGenerator::instance().getRandomDirection();
+  auto board_size = Game::instance().getBoardSize();
+  position_ = RandomNumberGenerator::instance().getRandomVector(Vec2i(0, 0), board_size - Vec2i(1, 1));
+  direction_ = RandomNumberGenerator::instance().getRandomVector(Vec2i(-2, -2), Vec2i(2, 2));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(const int & pos_x, const int & pos_y)
-    : id_(object_counter_++), position_(pos_x, pos_y)
+Player::Player(Position position) : id_(object_counter_++), position_(position)
 {
-  direction_ = RandomNumberGenerator::instance().getRandomDirection();
+  direction_ = RandomNumberGenerator::instance().getRandomVector(Vec2i(-2, -2), Vec2i(2, 2));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(const int & pos_x, const int & pos_y, const int & dir_x, const int & dir_y)
-    : id_(object_counter_++), position_(pos_x, pos_y),
-      direction_(dir_x, dir_y)
+Player::Player(Position position, Vec2i direction)
+    : id_(object_counter_++), position_(position), direction_(direction)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::move(void)
 {
   Position board_size = Game::instance().getBoardSize();
-  int result_x = position_.getX();
-  int result_y = position_.getY();
+  int result_x = position_.x();
+  int result_y = position_.x();
 
-  if((position_.getX() + direction_.getX()) >= board_size.getX())
+  if((position_.x() + direction_.x()) >= board_size.x())
   {
     result_x = 0;
   }
-  else if((position_.getX() + direction_.getX()) < 0 )
+  else if((position_.x() + direction_.x()) < 0 )
   {
-    result_x = board_size.getX() - 1;
+    result_x = board_size.x() - 1;
   }
   else
   {
-    result_x = position_.getX() + direction_.getX();
+    result_x = position_.x() + direction_.x();
   }
 
 
-  if((position_.getY() + direction_.getY()) >= board_size.getY())
+  if((position_.y() + direction_.y()) >= board_size.y())
   {
     result_y = 0;
   }
-  else if((position_.getY() + direction_.getY()) < 0 )
+  else if((position_.y() + direction_.y()) < 0 )
   {
-    result_y = board_size.getY() - 1;
+    result_y = board_size.y() - 1;
   }
   else
   {
-    result_y = position_.getY() + direction_.getY();
+    result_y = position_.y() + direction_.y();
   }
 
   position_ = Position(result_x, result_y);
@@ -74,7 +72,7 @@ void Player::playerUnregisterNotification(PlayerMovementSubject &player)
 
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Player::playerMovementNotification(PlayerMovementSubject &player, glm::ivec2 &delta)
+void Player::playerMovementNotification(PlayerMovementSubject &player, Distance &delta)
 {
 
 }

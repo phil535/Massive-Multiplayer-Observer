@@ -2,7 +2,8 @@
 #define MASSIVE_MULTIPLAYER_OBSERVER_PLAYER_H
 
 #include <ostream>
-#include "Position.h"
+
+#include "Types.h"
 #include "PlayerMovementSubjectObserver.h"
 
 class Player : public PlayerMovementSubject, PlayerMovementObserver
@@ -11,14 +12,14 @@ class Player : public PlayerMovementSubject, PlayerMovementObserver
     // Constructor / Deconstructor
   public:
     Player();
-    Player(const int & pos_x, const int & pos_y);
-    Player(const int & pos_x, const int & pos_y, const int & dir_x, const int & dir_y);
+    Player(Position position);
+    Player(Position position, Direction direction);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
-    inline const Position &getPosition(void) const{ return position_; }
-    inline const Position &getDirection(void) const{ return direction_; }
-    inline size_t getId() const{ return id_; }
+    inline const Position &getPosition(void) const{return position_;}
+    inline const Direction &getDirection(void) const{return direction_;}
+    inline size_t getId() const{return id_;}
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
@@ -27,14 +28,14 @@ class Player : public PlayerMovementSubject, PlayerMovementObserver
 
     virtual void playerRegisterNotification(PlayerMovementSubject &player);
     virtual void playerUnregisterNotification(PlayerMovementSubject &player);
-    virtual void playerMovementNotification(PlayerMovementSubject &player, glm::ivec2 &delta);
+    virtual void playerMovementNotification(PlayerMovementSubject &player, Distance &delta);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Member
   private:
     size_t id_;
     Position position_;
-    Position direction_;
+    Direction direction_;
     static size_t object_counter_;
 };
 

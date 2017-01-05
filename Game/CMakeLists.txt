@@ -11,14 +11,14 @@ set(SOURCE_FILES
     main.cpp
     Player.cpp
     Player.h
-    Position.cpp
-    Position.h
     RandomNumberGenerator.cpp
     RandomNumberGenerator.h
     WebsocketServer.cpp
     WebsocketServer.h
     PlayerMovementSubjectObserver.cpp
-    PlayerMovementSubjectObserver.h)
+    PlayerMovementSubjectObserver.h
+        Types.cpp
+        Types.h)
 
 include_directories(dependencies/websocketpp)
 include_directories(dependencies/glm)

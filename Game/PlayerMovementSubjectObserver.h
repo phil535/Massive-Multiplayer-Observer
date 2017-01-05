@@ -1,7 +1,7 @@
 #ifndef GAME_PLAYERMOVEMENTSUBJECTOBSERVER_H
 #define GAME_PLAYERMOVEMENTSUBJECTOBSERVER_H
 
-#include <glm/glm.hpp>
+#include "Types.h"
 #include <unordered_set>
 
 class PlayerMovementSubject;
@@ -9,7 +9,7 @@ class PlayerMovementSubject;
 class PlayerMovementObserver
 {
   public:
-    virtual void playerMovementNotification(PlayerMovementSubject &player, glm::ivec2 &delta) = 0;
+    virtual void playerMovementNotification(PlayerMovementSubject &player, Distance &delta) = 0;
 };
 
 class PlayerMovementSubject
@@ -18,7 +18,7 @@ class PlayerMovementSubject
   public:
     void registerPlayerMovementObserver(PlayerMovementObserver &observer);
     void unregisterPlayerMovementObserver(PlayerMovementObserver &observer);
-    void notifyPlayerMovementObservers(glm::ivec2 &delta);
+    void notifyPlayerMovementObservers(Distance &delta);
 
     virtual void playerRegisterNotification(PlayerMovementSubject &player) = 0;
     virtual void playerUnregisterNotification(PlayerMovementSubject &player) = 0;

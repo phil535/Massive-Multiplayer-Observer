@@ -15,18 +15,13 @@ RandomNumberGenerator::RandomNumberGenerator()
 {
   std::srand(std::time(0));
 }
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-Position RandomNumberGenerator::getRandomPosition(const Position &max) const
+int RandomNumberGenerator::getRandomInt(int min, int max) const
 {
-
-  if (max.getX() == 0 || max.getY() == 0) return Position(0, 0);
-
-  return Position(std::rand() % (max.getX() - 1), std::rand() % (max.getY() - 1));
+  return min + rand() % (max + 1 - min);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Position RandomNumberGenerator::getRandomDirection() const
+Vec2i RandomNumberGenerator::getRandomVector(Vec2i min_vec, Vec2i max_vec) const
 {
-  return Position(std::rand() % 3 - 1, std::rand() % 3 - 1);
+  return Vec2i(getRandomInt(min_vec.x(), min_vec.y()), getRandomInt(max_vec.x(), max_vec.y()));
 }

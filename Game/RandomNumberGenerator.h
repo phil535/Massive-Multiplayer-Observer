@@ -1,7 +1,7 @@
 #ifndef MASSIVE_MULTIPLAYER_OBSERVER_RANDOMNUMBERGENERATOR_H
 #define MASSIVE_MULTIPLAYER_OBSERVER_RANDOMNUMBERGENERATOR_H
 
-#include "Position.h"
+#include "Types.h"
 
 class RandomNumberGenerator
 {
@@ -16,9 +16,10 @@ class RandomNumberGenerator
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
+  private:
+    int getRandomInt(int min, int max) const;
   public:
-    Position getRandomPosition(const Position &max) const;
-    Position getRandomDirection() const;
+    Vec2i getRandomVector(Vec2i min, Vec2i max) const;
 };
 
 #endif //MASSIVE_MULTIPLAYER_OBSERVER_RANDOMNUMBERGENERATOR_H

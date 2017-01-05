@@ -14,7 +14,7 @@ void PlayerMovementSubject::unregisterPlayerMovementObserver(PlayerMovementObser
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void PlayerMovementSubject::notifyPlayerMovementObservers(glm::ivec2 &delta)
+void PlayerMovementSubject::notifyPlayerMovementObservers(Distance &delta)
 {
   for(auto observer : observers_)
     observer->playerMovementNotification(*this, delta);

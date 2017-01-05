@@ -1,24 +1,21 @@
 #include <iostream>
 #include <thread>
-#include <string>
 #include "Game.h"
-#include "RandomNumberGenerator.h"
-#include <iostream>
 #include <fstream>
 
 using std::cout;
 using std::endl;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Game::Game() : running_(false)
+Game::Game(void) : running_(false)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Game::~Game()
+Game::~Game(void)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Game &Game::instance()
+Game &Game::instance(void)
 {
   static Game gameSingleton;
   return gameSingleton;
@@ -110,8 +107,8 @@ int Game::run(const std::vector<const char *> &args)
     }
     else if (input_buffer == "add")
     {
-      Game::instance().addPlayer(RandomNumberGenerator::instance().getRandomPosition(Game::instance().getBoardSize()),
-                                 RandomNumberGenerator::instance().getRandomDirection());
+      Game::instance().addPlayer(RandomNumberGenerator::instance().getRandomVector(Position(0, 0), Game::instance().board_size_),
+                                 RandomNumberGenerator::instance().getRandomVector(Direction(-2,-2), Direction(2, 2)));
     }
     else if (input_buffer == "list")
     {
@@ -133,9 +130,9 @@ int Game::run(const std::vector<const char *> &args)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::addPlayer(Position position, Position direction)
+void Game::addPlayer(Position position, Direction direction)
 {
-  std::unique_ptr<Player> new_player(new Player(position.getX(), position.getY(), direction.getX(), direction.getY()));
+  std::unique_ptr<Player> new_player(new Player(position, direction));
 
   players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
 
@@ -184,15 +181,15 @@ std::string Game::getJsonPlayerState() const
       ss << ", ";
 
     ss << "{\"id\": " << p->second->getId()
-    << ",\"x\": " << p->second->getPosition().getX()
-    << ",\"y\": " << p->second->getPosition().getY() << "}";
+    << ",\"x\": " << p->second->getPosition().x()
+    << ",\"y\": " << p->second->getPosition().y() << "}";
   }
   ss << "]}";
   return ss.str();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::setBoardSize(const Position set_val)
+void Game::setBoardSize(Vec2i size)
 {
-  board_size_ = set_val;
+  board_size_ = size;
 }
