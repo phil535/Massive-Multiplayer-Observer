@@ -1,7 +1,9 @@
 #include <iostream>
-#include <thread>
-#include "Game.h"
 #include <fstream>
+#include <thread>
+
+#include "Game.h"
+
 
 using std::cout;
 using std::endl;
@@ -15,89 +17,30 @@ Game::~Game(void)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Game &Game::instance(void)
+int Game::run(const std::vector<std::string> &args)
 {
-  static Game gameSingleton;
-  return gameSingleton;
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-int Game::run(const std::vector<const char *> &args)
-{
-  Game::instance().running_ = true;
-
-  // todo: start implementation here!
-
-  int init_player_cnt = 0;
-  Game::instance().setBoardSize();
-
-  for( std::vector<const char *>::const_iterator itr = args.begin(); itr != args.end(); ++itr )
-  {
-    if(std::string(*itr) == "--boardsize")
-    {
-      if ((itr + 1) != args.end())
-      {
-        int board_width, board_height;
-        try
-        {
-          std::string tmp_string_width = std::string(*(itr + 1));
-          board_width = std::stoi(tmp_string_width);
-          itr++;
-
-          if ((itr + 1) != args.end())
-          {
-            try
-            {
-              std::string tmp_string_height = std::string(*(itr + 1));
-              board_height = std::stoi(tmp_string_height);
-              Game::instance().setBoardSize(Position(board_width, board_height));
-              itr++;
-              continue;
-            }
-            catch (std::exception &e)
-            {}
-          }
-          Game::instance().setBoardSize(Position(board_width, board_width));
-          continue;
-        }
-        catch (std::exception &e)
-        {}
-
-      }
-    }
-    else if(std::string(*itr) == "--init-players")
-    {
-      if ((itr + 1) != args.end())
-      {
-        try
-        {
-          std::string tmp_string_player_cnt = std::string(*(itr + 1));
-          init_player_cnt = std::stoi(tmp_string_player_cnt);
-          itr++;
-          continue;
-        }
-        catch (std::exception &e)
-        {}
-      }
-    }
-  }
-
-  cout << "Game::run..." << endl;
+  running_ = true;
 
   // start websocketserver on port 8888
-  std::thread websocket_thread(std::bind(&WebsocketServer::run, &Game::instance().websocket_server_, 8888));
+  std::thread websocket_thread(std::bind(&WebsocketServer::run, &websocket_server_, 8888));
 
-  // Add initial players.
-  while( init_player_cnt-- )
-    Game::instance().addPlayer();
+  auto it = args.end();
+  if((it = std::find(args.begin(), args.end(), "--init-players")) != args.end() && (++it != args.end()))
+  {
+    try
+    {
+      auto init_player_count = std::stoi(*it);
 
-  Game::instance().addPlayer({400,400},{0,0});
-  Game::instance().addPlayer({300,400},{1,0});
+      // Add initial players.
+      while(init_player_count--) addPlayer();
+    }
+    catch(...){}
+  }
 
   // start gameloop
-  std::thread update_thread(Game::update);
+  std::thread update_thread(std::bind(&Game::update, this));
 
-  for (; Game::instance().running_;)
+  for (;running_;)
   {
     std::cout << "> ";
     std::string input_buffer;
@@ -105,27 +48,27 @@ int Game::run(const std::vector<const char *> &args)
 
     if (input_buffer == "quit")
     {
-      Game::instance().running_ = false;
+      running_ = false;
       break;
     }
     else if (input_buffer == "add")
     {
-      Game::instance().addPlayer();
+      addPlayer();
     }
     else if (input_buffer == "list")
     {
-      for (auto &p : Game::instance().players_)
+      for (auto &p : players_)
         std::cout << *(p.second) << std::endl;
     }
   }
 
-  Game::instance().players_.clear();
+  players_.clear();
 
   // stop gameloop
   update_thread.join();
 
   // stop websocketserver
-  Game::instance().websocket_server_.stop();
+  websocket_server_.stop();
   websocket_thread.join();
 
   return 0;
@@ -134,27 +77,15 @@ int Game::run(const std::vector<const char *> &args)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Game::addPlayer(Position position, Direction direction)
 {
-  std::unique_ptr<Player> new_player(new Player(position, direction));
-
-  // search for players in range of new player and register observers
-  for(auto &player : Game::instance().players_)
-  {
-    // check for player in range
-    if(new_player->isInRangeOf(*(player.second)))
-    {
-      player.second->registerPlayerMovementObserver(*new_player);
-      new_player->registerPlayerMovementObserver(*(player.second));
-    }
-  }
-
+  std::unique_ptr<Player> new_player(new Player(*this, position, direction));
   players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Game::addPlayer(void)
 {
-  addPlayer(RandomNumberGenerator::instance().getRandomVector(Position(0, 0), Game::instance().board_size_ - 1),
-                RandomNumberGenerator::instance().getRandomVector(Direction(-1, -1), Direction(1, 1)));
+  addPlayer(RandomNumberGenerator::instance().getRandomVector({0,0}, board_size_ - 1),
+            RandomNumberGenerator::instance().getRandomVector({-1,-1}, {1,1}));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -166,21 +97,21 @@ void Game::removePlayer(size_t id)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Game::update()
 {
-  for (; Game::instance().running_;)
+  for (;running_;)
   {
     // move players
-    for (auto &p : Game::instance().players_)
+    for (auto &p : players_)
       (p.second)->move(p.second->getDirection());
 
     // search for new player range collisions
-    for (auto &pIt1 : Game::instance().players_)
+    for (auto &pIt1 : players_)
     {
-      for (auto &pIt2 : Game::instance().players_)
+      for (auto &pIt2 : players_)
       {
         // skip selfcompare
         if(pIt1.second.get() == pIt2.second.get()) continue;
 
-        // check for player in range
+        // check if player in range
         if(pIt1.second->isInRangeOf(*(pIt2.second)))
         {
           pIt1.second->registerPlayerMovementObserver(*(pIt2.second));
@@ -190,21 +121,21 @@ void Game::update()
     }
 
     // update current state
-    Game::instance().websocket_server_.broadcastMessage(Game::instance().getJsonPlayerState());
+    websocket_server_.broadcastMessage(getJsonPlayerState());
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(Game::instance().UPDATE_CYCLE_MS));
+    std::this_thread::sleep_for(std::chrono::milliseconds(Game::UPDATE_CYCLE_MS));
   }
 }
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 std::string Game::getJsonPlayerState() const
 {
   std::stringstream ss;
 
   ss << "{\"players\":[";
-
-  for(auto p = Game::instance().players_.begin(); p != Game::instance().players_.end();p++)
+  for(auto p = players_.begin(); p != players_.end();p++)
   {
-    if(p != Game::instance().players_.begin())
+    if(p != players_.begin())
       ss << ", ";
 
     ss << "{\"id\": " << p->second->getId()
@@ -213,10 +144,4 @@ std::string Game::getJsonPlayerState() const
   }
   ss << "]}";
   return ss.str();
-}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-void Game::setBoardSize(Vec2i size)
-{
-  board_size_ = size;
 }

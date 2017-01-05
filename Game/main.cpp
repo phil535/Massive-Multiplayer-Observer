@@ -7,8 +7,9 @@ int main(int argc, char *argv[])
 {
   try
   {
-    const std::vector<const char *> args(argv, argv + argc);
-    return Game::instance().run(args);
+    const std::vector<std::string> args(argv + 1, argv + argc);
+    Game game;
+    return game.run(args);
   }
   catch (std::exception &ex)
   {

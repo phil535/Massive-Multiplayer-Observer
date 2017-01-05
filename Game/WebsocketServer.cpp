@@ -51,9 +51,6 @@ void WebsocketServer::onOpen(websocketpp::connection_hdl hdl)
 
   // add new connection
   front_ends_.insert(hdl);
-
-  // update current players
-  server_.send(hdl, Game::instance().getJsonPlayerState(), websocketpp::frame::opcode::text);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

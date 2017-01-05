@@ -16,9 +16,8 @@ class RandomNumberGenerator
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
-  private:
-    int getRandomInt(int min, int max) const;
   public:
+    int getRandomInt(int min, int max) const;
     Vec2i getRandomVector(Vec2i min, Vec2i max) const;
 };
 

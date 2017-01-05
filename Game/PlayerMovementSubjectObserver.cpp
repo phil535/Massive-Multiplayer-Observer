@@ -40,13 +40,16 @@ void PlayerMovementSubject::notifyPlayerMovementObservers(Distance &delta)
     // remove player from observer if out of range
     if(!player_.isInRangeOf((*it)->player_))
     {
-      player_.unregisterPlayerMovementObserver((*it)->player_);
-      (*it)->player_.unregisterPlayerMovementObserver(player_);
+      (*it)->player_.playerUnregisterNotification(player_);
+      (*it)->player_.observers_.erase(&player_);
+
+      playerUnregisterNotification((*it)->player_);
+      it = observers_.erase(it);
     }
     else
     {
       // otherwise notify observer about player movement
-      (*it)->player_.playerMovementNotification(player_, delta);
+      (*it)->playerMovementNotification(player_, delta);
       ++it;
     }
   }

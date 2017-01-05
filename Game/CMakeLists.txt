@@ -21,6 +21,5 @@ set(SOURCE_FILES
     Types.h)
 
 include_directories(dependencies/websocketpp)
-include_directories(dependencies/termcolor/include)
 
 add_executable(Game ${SOURCE_FILES})

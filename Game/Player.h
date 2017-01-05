@@ -6,6 +6,8 @@
 #include "Types.h"
 #include "PlayerMovementSubjectObserver.h"
 
+class Game;
+
 class Player : public PlayerMovementSubject, public PlayerMovementObserver
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16,8 +18,8 @@ class Player : public PlayerMovementSubject, public PlayerMovementObserver
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
   public:
-    Player();
-    Player(Position position, Direction direction);
+    Player(Game &game);
+    Player(Game &game, Position position, Direction direction);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
@@ -38,6 +40,7 @@ class Player : public PlayerMovementSubject, public PlayerMovementObserver
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Member
   private:
+    Game &game_;
     size_t id_;
     Position position_;
     Direction direction_;

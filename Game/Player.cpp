@@ -1,16 +1,15 @@
 #include "Player.h"
 #include "Game.h"
-#include <termcolor/termcolor.hpp>
 
 size_t Player::object_counter_;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(void) : PlayerMovementSubject(*this), PlayerMovementObserver(*this), id_(object_counter_++),
+Player::Player(Game &game) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this), id_(object_counter_++),
                        position_(0), direction_(0)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(Position position, Vec2i direction) : PlayerMovementSubject(*this), PlayerMovementObserver(*this),
+Player::Player(Game &game, Position position, Vec2i direction) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this),
                                                      id_(object_counter_++), position_(position), direction_(direction)
 {}
 
@@ -24,40 +23,19 @@ bool Player::isInRangeOf(Player &player) const
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::move(Vec2i delta)
 {
-  Position board_size = Game::instance().getBoardSize();
-  int result_x = position_.x();
-  int result_y = position_.x();
+  position_ += delta;
 
-  if((position_.x() + delta.x()) >= board_size.x())
-  {
-    result_x = 0;
-  }
-  else if((position_.x() + delta.x()) < 0 )
-  {
-    result_x = board_size.x() - 1;
-  }
-  else
-  {
-    result_x = position_.x() + delta.x();
-  }
-
-  if((position_.y() + delta.y()) >= board_size.y())
-  {
-    result_y = 0;
-  }
-  else if((position_.y() + delta.y()) < 0 )
-  {
-    result_y = board_size.y() - 1;
-  }
-  else
-  {
-    result_y = position_.y() + delta.y();
-  }
-
-  position_ = Position(result_x, result_y);
+  if(position_.x() < 0)
+    position_.x() = game_.BOARD_SIZE.x() - 1;
+  if(position_.x() > game_.BOARD_SIZE.x())
+    position_.x() = 0;
+  if(position_.y() < 0)
+    position_.y() = game_.BOARD_SIZE.y() - 1;
+  if(position_.y() > game_.BOARD_SIZE.y())
+    position_.y() = 0;
 
   // notify all observers about player movement
-  notifyPlayerMovementObservers(delta);
+  if(delta != 0) notifyPlayerMovementObservers(delta);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

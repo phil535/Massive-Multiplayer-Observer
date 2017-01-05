@@ -15,25 +15,25 @@ class Game
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constants
-    const int UPDATE_CYCLE_MS = 100;
+    static const int UPDATE_CYCLE_MS = 100;
+  public:
+    const Size BOARD_SIZE = Size(800, 800);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
   public:
-    static Game &instance();
-
-  private:
     Game(void);
+    ~Game(void);
+  private:
     Game(const Game &rhs);
     Game &operator=(const Game &rhs);
-    ~Game(void);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
   public:
-    static int run(const std::vector<const char *> &args);
+    int run(const std::vector<std::string> &args);
   private:
-    static void update();
+    void update();
 
     void addPlayer(void);
     void addPlayer(Position pos, Position direction);
@@ -44,10 +44,6 @@ class Game
     // Getter / Setter
   public:
     std::string getJsonPlayerState(void) const;
-
-    const Vec2i &getBoardSize(void) {return board_size_;}
-  private:
-    void setBoardSize(Vec2i size = Vec2i(1024, 1024));
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Member

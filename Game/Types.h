@@ -24,6 +24,8 @@ namespace Vec
   };
 }
 
+#include <iostream>
+
 template<class TYPE, std::size_t SIZE>
 class __attribute__((packed)) _Vec_
 {
@@ -39,10 +41,17 @@ class __attribute__((packed)) _Vec_
       *this = value;
     }
 
-    template<class...T2, typename std::enable_if<sizeof...(T2) == SIZE, int>::type = 0>
-    _Vec_(T2... args)
+    _Vec_(std::initializer_list<TYPE> list)
     {
-      data_ = {args...};
+      std::copy(list.begin(), list.end(), data_.begin());
+    }
+
+    template<typename... Args>
+    _Vec_(Args... args)
+    {
+      TYPE data[SIZE] = {args...};
+      for(auto it = 0; it < SIZE; it++)
+        data_[it] = data[it];
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +62,7 @@ class __attribute__((packed)) _Vec_
     // Assignment operator
     _Vec_ &operator=(const _Vec_ &rhs)
     {
-      data_ = rhs.data_;
+      std::copy(rhs.data_.begin(), rhs.data_.end(), data_.begin());
     }
     _Vec_ &operator=(const TYPE &value)
     {
@@ -70,12 +79,25 @@ class __attribute__((packed)) _Vec_
         sum.data_[i] = data_[i] + rhs.data_[i];
       return sum;
     }
-    _Vec_<TYPE, SIZE> operator+(const TYPE &rhs) const
+    _Vec_<TYPE, SIZE> operator+(const TYPE &value) const
     {
       _Vec_<TYPE, SIZE> sum;
       for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] + rhs;
+        sum.data_[i] = data_[i] + value;
       return sum;
+    }
+    _Vec_<TYPE, SIZE> &operator+=(const _Vec_<TYPE, SIZE> &rhs)
+    {
+      for(int i = 0; i < data_.size(); i++)
+        data_[i] += rhs.data_[i];
+      return *this;
+    }
+    _Vec_<TYPE, SIZE> &operator+=(const TYPE &value)
+    {
+      _Vec_<TYPE, SIZE> sum;
+      for(int i = 0; i < data_.size(); i++)
+        data_[i] += value;
+      return *this;
     }
     _Vec_<TYPE, SIZE> operator-(const _Vec_<TYPE, SIZE> &rhs) const
     {
@@ -84,42 +106,101 @@ class __attribute__((packed)) _Vec_
         sum.data_[i] = data_[i] - rhs.data_[i];
       return sum;
     }
-    _Vec_<TYPE, SIZE> operator-(const TYPE &rhs) const
+    _Vec_<TYPE, SIZE> operator-(const TYPE &value) const
     {
       _Vec_<TYPE, SIZE> sum;
       for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] - rhs;
+        sum.data_[i] = data_[i] - value;
       return sum;
     }
-    _Vec_<TYPE, SIZE> operator*(const _Vec_<TYPE, SIZE> &rhs) const
+    _Vec_<TYPE, SIZE> &operator-=(const _Vec_<TYPE, SIZE> &rhs)
     {
-      _Vec_<TYPE, SIZE> sum;
       for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] * rhs.data_[i];
-      return sum;
+        data_[i] -= rhs.data_[i];
+      return *this;
     }
-    _Vec_<TYPE, SIZE> operator*(const TYPE &rhs) const
+    _Vec_<TYPE, SIZE> &operator-=(const TYPE &value)
     {
       _Vec_<TYPE, SIZE> sum;
       for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] * rhs;
-      return sum;
-    }
-    _Vec_<TYPE, SIZE> operator/(const _Vec_<TYPE, SIZE> &rhs) const
-    {
-      _Vec_<TYPE, SIZE> sum;
-      for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] / rhs.data_[i];
-      return sum;
-    }
-    _Vec_<TYPE, SIZE> operator/(const TYPE &rhs) const
-    {
-      _Vec_<TYPE, SIZE> sum;
-      for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] / rhs;
-      return sum;
+        data_[i] -= value;
+      return *this;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Comparison operators
+    bool operator==(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] != rhs.data_[i]) return false;
+      return true;
+    }
+    bool operator==(const TYPE &value) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] != value) return false;
+      return true;
+    }
+    bool operator!=(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] != rhs.data_[i]) return true;
+      return false;
+    }
+    bool operator!=(const TYPE &value) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] != value) return true;
+      return false;
+    }
+    bool operator<(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] >= rhs.data_[i]) return false;
+      return true;
+    }
+    bool operator<(const TYPE &value) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] >= value) return false;
+      return true;
+    }
+    bool operator<=(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] > rhs.data_[i]) return false;
+      return true;
+    }
+    bool operator<=(const TYPE &value) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] > value) return false;
+      return true;
+    }
+    bool operator>(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] <= rhs.data_[i]) return false;
+      return true;
+    }
+    bool operator>(const TYPE &value) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] <= value) return false;
+      return true;
+    }
+    bool operator>=(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] < rhs.data_[i]) return false;
+      return true;
+    }
+    bool operator>=(const TYPE &value) const
+    {
+      for(int i = 0; i < data_.size(); i++)
+        if(data_[i] < value) return false;
+      return true;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
@@ -204,5 +285,6 @@ typedef _Vec_<int, 2> Vec2i;
 typedef _Vec_<int, 2> Position;
 typedef _Vec_<int, 2> Distance;
 typedef _Vec_<int, 2> Direction;
+typedef _Vec_<int, 2> Size;
 
 #endif //GAME_TYPES_H
