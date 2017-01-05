@@ -17,10 +17,9 @@ set(SOURCE_FILES
     WebsocketServer.h
     PlayerMovementSubjectObserver.cpp
     PlayerMovementSubjectObserver.h
-        Types.cpp
-        Types.h)
+    Types.cpp
+    Types.h)
 
 include_directories(dependencies/websocketpp)
-include_directories(dependencies/glm)
 
 add_executable(Game ${SOURCE_FILES})

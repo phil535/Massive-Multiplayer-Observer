@@ -5,6 +5,7 @@
 #include <ostream>
 #include <array>
 #include <cstddef>
+#include <cmath>
 
 namespace Vec
 {
@@ -69,11 +70,25 @@ class __attribute__((packed)) _Vec_
         sum.data_[i] = data_[i] + rhs.data_[i];
       return sum;
     }
+    _Vec_<TYPE, SIZE> operator+(const TYPE &rhs) const
+    {
+      _Vec_<TYPE, SIZE> sum;
+      for(int i = 0; i < data_.size(); i++)
+        sum.data_[i] = data_[i] + rhs;
+      return sum;
+    }
     _Vec_<TYPE, SIZE> operator-(const _Vec_<TYPE, SIZE> &rhs) const
     {
       _Vec_<TYPE, SIZE> sum;
       for(int i = 0; i < data_.size(); i++)
         sum.data_[i] = data_[i] - rhs.data_[i];
+      return sum;
+    }
+    _Vec_<TYPE, SIZE> operator-(const TYPE &rhs) const
+    {
+      _Vec_<TYPE, SIZE> sum;
+      for(int i = 0; i < data_.size(); i++)
+        sum.data_[i] = data_[i] - rhs;
       return sum;
     }
     _Vec_<TYPE, SIZE> operator*(const _Vec_<TYPE, SIZE> &rhs) const
@@ -83,11 +98,25 @@ class __attribute__((packed)) _Vec_
         sum.data_[i] = data_[i] * rhs.data_[i];
       return sum;
     }
+    _Vec_<TYPE, SIZE> operator*(const TYPE &rhs) const
+    {
+      _Vec_<TYPE, SIZE> sum;
+      for(int i = 0; i < data_.size(); i++)
+        sum.data_[i] = data_[i] * rhs;
+      return sum;
+    }
     _Vec_<TYPE, SIZE> operator/(const _Vec_<TYPE, SIZE> &rhs) const
     {
       _Vec_<TYPE, SIZE> sum;
       for(int i = 0; i < data_.size(); i++)
         sum.data_[i] = data_[i] / rhs.data_[i];
+      return sum;
+    }
+    _Vec_<TYPE, SIZE> operator/(const TYPE &rhs) const
+    {
+      _Vec_<TYPE, SIZE> sum;
+      for(int i = 0; i < data_.size(); i++)
+        sum.data_[i] = data_[i] / rhs;
       return sum;
     }
 
@@ -118,7 +147,7 @@ class __attribute__((packed)) _Vec_
     const TYPE &alpha()const{return data_[Vec::ALPHA];};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ostream operator
+    // methods operator
     void print(std::ostream &stream) const
     {
       stream << '(';
@@ -128,6 +157,17 @@ class __attribute__((packed)) _Vec_
         stream << *it;
       }
       stream << ')';
+    }
+    double euclideanDistance(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      double squared_distance = 0.0;
+
+      for(int i = 0; i < data_.size(); i++)
+      {
+        double delta = data_[i] - rhs.data_[i];
+        squared_distance += delta * delta;
+      }
+      return std::sqrt(squared_distance);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

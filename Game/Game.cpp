@@ -107,8 +107,7 @@ int Game::run(const std::vector<const char *> &args)
     }
     else if (input_buffer == "add")
     {
-      Game::instance().addPlayer(RandomNumberGenerator::instance().getRandomVector(Position(0, 0), Game::instance().board_size_),
-                                 RandomNumberGenerator::instance().getRandomVector(Direction(-2,-2), Direction(2, 2)));
+      Game::instance().addPlayer();
     }
     else if (input_buffer == "list")
     {
@@ -134,17 +133,29 @@ void Game::addPlayer(Position position, Direction direction)
 {
   std::unique_ptr<Player> new_player(new Player(position, direction));
 
-  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
+  // search for players in range of new player and register observers
+  for(auto &player : Game::instance().players_)
+  {
+    // check for player in range
+    if(new_player->getPosition().euclideanDistance(player.second->getPosition()) <= Player::RANGE)
+    {
+      // register
+      player.second->registerPlayerMovementObserver(*new_player);
+      new_player->registerPlayerMovementObserver(*(player.second));
+      // notify
+      player.second->playerRegisterNotification(*new_player);
+      new_player->playerRegisterNotification(*(player.second));
+    }
+  }
 
+  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Game::addPlayer(void)
 {
-  std::unique_ptr<Player> new_player(new Player());
-
-  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
-
+  addPlayer(RandomNumberGenerator::instance().getRandomVector(Position(0, 0), Game::instance().board_size_ - 1),
+                RandomNumberGenerator::instance().getRandomVector(Direction(-2, -2), Direction(2, 2)));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -160,7 +171,13 @@ void Game::update()
   {
     // move players
     for (auto &p : Game::instance().players_)
-      (p.second)->move();
+      (p.second)->move(p.second->getDirection());
+
+    // search for new player range collisions
+    //...
+
+
+
 
     // update current state
     Game::instance().websocket_server_.broadcastMessage(Game::instance().getJsonPlayerState());

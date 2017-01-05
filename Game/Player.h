@@ -6,13 +6,17 @@
 #include "Types.h"
 #include "PlayerMovementSubjectObserver.h"
 
-class Player : public PlayerMovementSubject, PlayerMovementObserver
+class Player : public PlayerMovementSubject, public PlayerMovementObserver
 {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Constants
+  public:
+    static const int RANGE = 25;
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
   public:
     Player();
-    Player(Position position);
     Player(Position position, Direction direction);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +27,7 @@ class Player : public PlayerMovementSubject, PlayerMovementObserver
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
-    void move(void);
+    void move(Vec2i delta);
     friend std::ostream &operator<<(std::ostream &stream, const Player &rhs);
 
     virtual void playerRegisterNotification(PlayerMovementSubject &player);
