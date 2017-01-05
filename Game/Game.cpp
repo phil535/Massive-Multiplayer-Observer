@@ -137,14 +137,10 @@ void Game::addPlayer(Position position, Direction direction)
   for(auto &player : Game::instance().players_)
   {
     // check for player in range
-    if(new_player->getPosition().euclideanDistance(player.second->getPosition()) <= Player::RANGE)
+    if(new_player->isInRangeOf(*(player.second)))
     {
-      // register
       player.second->registerPlayerMovementObserver(*new_player);
       new_player->registerPlayerMovementObserver(*(player.second));
-      // notify
-      player.second->playerRegisterNotification(*new_player);
-      new_player->playerRegisterNotification(*(player.second));
     }
   }
 
@@ -155,7 +151,7 @@ void Game::addPlayer(Position position, Direction direction)
 void Game::addPlayer(void)
 {
   addPlayer(RandomNumberGenerator::instance().getRandomVector(Position(0, 0), Game::instance().board_size_ - 1),
-                RandomNumberGenerator::instance().getRandomVector(Direction(-2, -2), Direction(2, 2)));
+                RandomNumberGenerator::instance().getRandomVector(Direction(-1, -1), Direction(1, 1)));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -174,10 +170,21 @@ void Game::update()
       (p.second)->move(p.second->getDirection());
 
     // search for new player range collisions
-    //...
+    for (auto &pIt1 : Game::instance().players_)
+    {
+      for (auto &pIt2 : Game::instance().players_)
+      {
+        // skip selfcompare
+        if(pIt1.second.get() == pIt2.second.get()) continue;
 
-
-
+        // check for player in range
+        if(pIt1.second->isInRangeOf(*(pIt2.second)))
+        {
+          pIt1.second->registerPlayerMovementObserver(*(pIt2.second));
+          pIt2.second->registerPlayerMovementObserver(*(pIt1.second));
+        }
+      }
+    }
 
     // update current state
     Game::instance().websocket_server_.broadcastMessage(Game::instance().getJsonPlayerState());

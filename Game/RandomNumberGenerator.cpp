@@ -23,5 +23,5 @@ int RandomNumberGenerator::getRandomInt(int min, int max) const
 /*--------------------------------------------------------------------------------------------------------------------*/
 Vec2i RandomNumberGenerator::getRandomVector(Vec2i min_vec, Vec2i max_vec) const
 {
-  return Vec2i(getRandomInt(min_vec.x(), min_vec.y()), getRandomInt(max_vec.x(), max_vec.y()));
+  return Vec2i(getRandomInt(min_vec.x(), max_vec.x()), getRandomInt(min_vec.y(), max_vec.y()));
 }

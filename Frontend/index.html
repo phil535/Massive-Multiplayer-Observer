@@ -56,13 +56,6 @@
                 updatePlayer(msg.players[index].id, msg.players[index].x, msg.players[index].y);
             }
         }
-        function removeAllPlayers(){
-            if(game == undefined) return undefined;
-            for(var index = 0; index < players.length; ++index){
-                players[index].sprite.destroy();
-            }
-            players = [];
-        }
         $(document).ready(function(){
             game = new Phaser.Game(800, 800, Phaser.AUTO, 'Massive Multiplayer Observer!', {create: function(){
                 initWebsocket();
@@ -75,7 +68,7 @@
                 parseMessage(JSON.parse(event.data));
             };
             connection.onclose = function(){
-                removeAllPlayers();
+                game.world.removeAll();
                 setTimeout(function(){initWebsocket()}, 3000);
             };
         }

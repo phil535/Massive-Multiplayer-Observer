@@ -27,12 +27,13 @@ class Player : public PlayerMovementSubject, public PlayerMovementObserver
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
+    bool isInRangeOf(Player &player) const;
     void move(Vec2i delta);
     friend std::ostream &operator<<(std::ostream &stream, const Player &rhs);
 
-    virtual void playerRegisterNotification(PlayerMovementSubject &player);
-    virtual void playerUnregisterNotification(PlayerMovementSubject &player);
-    virtual void playerMovementNotification(PlayerMovementSubject &player, Distance &delta);
+    virtual void playerRegisterNotification(Player &player);
+    virtual void playerUnregisterNotification(Player &player);
+    virtual void playerMovementNotification(Player &player, Distance &delta);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Member

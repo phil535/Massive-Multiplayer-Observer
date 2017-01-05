@@ -4,24 +4,35 @@
 #include "Types.h"
 #include <unordered_set>
 
-class PlayerMovementSubject;
+class Player;
 
 class PlayerMovementObserver
 {
+    friend class PlayerMovementSubject;
+    Player &player_;
   public:
-    virtual void playerMovementNotification(PlayerMovementSubject &player, Distance &delta) = 0;
+    PlayerMovementObserver(Player &player);
+    enum REGISTER_RESULT
+    {
+      NEW_PLAYER,
+      ALREADY_EXISTS
+    };
+    virtual void playerMovementNotification(Player &player, Distance &delta) = 0;
 };
 
 class PlayerMovementSubject
 {
+    friend class PlayerMovementObserver;
+    Player &player_;
     std::unordered_set<PlayerMovementObserver*> observers_;
   public:
-    void registerPlayerMovementObserver(PlayerMovementObserver &observer);
+    PlayerMovementSubject(Player &player);
+    PlayerMovementObserver::REGISTER_RESULT registerPlayerMovementObserver(PlayerMovementObserver &observer);
     void unregisterPlayerMovementObserver(PlayerMovementObserver &observer);
     void notifyPlayerMovementObservers(Distance &delta);
 
-    virtual void playerRegisterNotification(PlayerMovementSubject &player) = 0;
-    virtual void playerUnregisterNotification(PlayerMovementSubject &player) = 0;
+    virtual void playerRegisterNotification(Player &player) = 0;
+    virtual void playerUnregisterNotification(Player &player) = 0;
 };
 
 

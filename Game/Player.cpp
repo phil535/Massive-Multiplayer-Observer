@@ -5,13 +5,20 @@
 size_t Player::object_counter_;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(void) : id_(object_counter_++), position_(0), direction_(0)
+Player::Player(void) : PlayerMovementSubject(*this), PlayerMovementObserver(*this), id_(object_counter_++),
+                       position_(0), direction_(0)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(Position position, Vec2i direction)
-    : id_(object_counter_++), position_(position), direction_(direction)
+Player::Player(Position position, Vec2i direction) : PlayerMovementSubject(*this), PlayerMovementObserver(*this),
+                                                     id_(object_counter_++), position_(position), direction_(direction)
 {}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+bool Player::isInRangeOf(Player &player) const
+{
+  return (position_.euclideanDistance(player.position_) <= RANGE) ? true : false;
+}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::move(Vec2i delta)
@@ -47,23 +54,26 @@ void Player::move(Vec2i delta)
   }
 
   position_ = Position(result_x, result_y);
+
+  // notify all observers about player movement
+  notifyPlayerMovementObservers(delta);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Player::playerRegisterNotification(PlayerMovementSubject &player)
+void Player::playerRegisterNotification(Player &player)
 {
-  std::cout << player << "registered @" << *this << std::endl;
+  std::cout << player << " registered @" << *this << std::endl;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Player::playerUnregisterNotification(PlayerMovementSubject &player)
+void Player::playerUnregisterNotification(Player &player)
 {
-  std::cout << player << "unregistered @" << *this << std::endl;
+  std::cout << player << " unregistered @" << *this << std::endl;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Player::playerMovementNotification(PlayerMovementSubject &player, Distance &delta)
+void Player::playerMovementNotification(Player &player, Distance &delta)
 {
-  std::cout << player << "moved by " << delta << " in sight of " << *this << std::endl;
+  std::cout << player << " moved by " << delta << " in sight of " << *this << std::endl;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
