@@ -1,6 +1,6 @@
 #include "Player.h"
-#include "RandomNumberGenerator.h"
 #include "Game.h"
+#include <termcolor/termcolor.hpp>
 
 size_t Player::object_counter_;
 
@@ -17,7 +17,8 @@ Player::Player(Position position, Vec2i direction) : PlayerMovementSubject(*this
 /*--------------------------------------------------------------------------------------------------------------------*/
 bool Player::isInRangeOf(Player &player) const
 {
-  return (position_.euclideanDistance(player.position_) <= RANGE) ? true : false;
+  static const size_t squared_range = RANGE * RANGE;
+  return (position_.euclideanDistanceSquared(player.position_) <= squared_range) ? true : false;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -62,13 +63,13 @@ void Player::move(Vec2i delta)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerRegisterNotification(Player &player)
 {
-  std::cout << player << " registered @" << *this << std::endl;
+  std::cout << player << " registered " << *this << std::endl;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerUnregisterNotification(Player &player)
 {
-  std::cout << player << " unregistered @" << *this << std::endl;
+  std::cout << player << " unregistered " << *this << std::endl;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerMovementNotification(Player &player, Distance &delta)
@@ -79,6 +80,6 @@ void Player::playerMovementNotification(Player &player, Distance &delta)
 /*--------------------------------------------------------------------------------------------------------------------*/
 std::ostream &operator<<(std::ostream &stream, const Player &rhs)
 {
-  stream << "[" << rhs.getId() << "] pos" << rhs.getPosition() << ", dir" << rhs.getDirection();
+  stream << "Player[" << rhs.getId() << "] @" << rhs.getPosition() << " -> " << rhs.getDirection();
   return stream;
 }

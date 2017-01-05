@@ -9,8 +9,9 @@ PlayerMovementObserver::PlayerMovementObserver(Player &player) : player_(player)
 /*--------------------------------------------------------------------------------------------------------------------*/
 PlayerMovementObserver::REGISTER_RESULT PlayerMovementSubject::registerPlayerMovementObserver(PlayerMovementObserver &observer)
 {
-  // insert and check if new element
-  if(observers_.insert(&observer).second)
+  // insert and notify if new element
+  auto new_element = observers_.insert(&observer).second;
+  if(new_element)
   {
     playerRegisterNotification(observer.player_);
     return PlayerMovementObserver::NEW_PLAYER;
@@ -26,6 +27,7 @@ PlayerMovementSubject::PlayerMovementSubject(Player &player) : player_(player)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void PlayerMovementSubject::unregisterPlayerMovementObserver(PlayerMovementObserver &observer)
 {
+  // remove observer and notify only if observer was present
   if(observers_.erase(&observer) != 0)
     playerUnregisterNotification(observer.player_);
 }
@@ -33,20 +35,19 @@ void PlayerMovementSubject::unregisterPlayerMovementObserver(PlayerMovementObser
 /*--------------------------------------------------------------------------------------------------------------------*/
 void PlayerMovementSubject::notifyPlayerMovementObservers(Distance &delta)
 {
-  // remove player from observer if out of range
   for (auto it = observers_.begin(); it != observers_.end(); )
   {
+    // remove player from observer if out of range
     if(!player_.isInRangeOf((*it)->player_))
     {
+      player_.unregisterPlayerMovementObserver((*it)->player_);
       (*it)->player_.unregisterPlayerMovementObserver(player_);
-      it = observers_.erase(it);
     }
     else
     {
+      // otherwise notify observer about player movement
+      (*it)->player_.playerMovementNotification(player_, delta);
       ++it;
     }
   }
-
-  for(auto observer : observers_)
-    observer->playerMovementNotification(this->player_, delta);
 }

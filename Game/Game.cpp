@@ -91,6 +91,9 @@ int Game::run(const std::vector<const char *> &args)
   while( init_player_cnt-- )
     Game::instance().addPlayer();
 
+  Game::instance().addPlayer({400,400},{0,0});
+  Game::instance().addPlayer({300,400},{1,0});
+
   // start gameloop
   std::thread update_thread(Game::update);
 

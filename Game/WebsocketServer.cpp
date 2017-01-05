@@ -1,10 +1,10 @@
 #include "WebsocketServer.h"
 #include "Game.h"
-
 #include <string>
 
 using websocketpp::lib::mutex;
 using websocketpp::lib::lock_guard;
+using websocketpp::connection_hdl;
 
 WebsocketServer::WebsocketServer()
 {
@@ -31,16 +31,10 @@ void WebsocketServer::run(int port)
   server_.set_message_handler(bind(&WebsocketServer::onMessage, this, _1, _2));
   server_.set_close_handler(bind(&WebsocketServer::onClose, this, _1));
 
-  try
-  {
-    server_.listen(port);
-    server_.start_accept();
-    server_.run();
-  }
-  catch(const std::exception &e)
-  {
-    std::cout << e.what() << std::endl;
-  }
+  server_.set_reuse_addr(true); // reuse port if still open
+  server_.listen(port);
+  server_.start_accept();
+  server_.run();
   server_.stop();
 }
 
@@ -63,13 +57,13 @@ void WebsocketServer::onOpen(websocketpp::connection_hdl hdl)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void WebsocketServer::onMessage(websocketpp::connection_hdl hdl, websocketpp::server<websocketpp::config::asio>::message_ptr msg)
+void WebsocketServer::onMessage(connection_hdl hdl, websocketpp::server<websocketpp::config::asio>::message_ptr msg)
 {
   // ignore all front_end messages
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void WebsocketServer::onClose(websocketpp::connection_hdl hdl)
+void WebsocketServer::onClose(connection_hdl hdl)
 {
   lock_guard<mutex> guard(mutex_front_ends_);
   front_ends_.erase(hdl);

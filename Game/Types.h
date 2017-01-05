@@ -169,6 +169,17 @@ class __attribute__((packed)) _Vec_
       }
       return std::sqrt(squared_distance);
     }
+    size_t euclideanDistanceSquared(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      size_t squared_distance = 0;
+
+      for(int i = 0; i < data_.size(); i++)
+      {
+        double delta = data_[i] - rhs.data_[i];
+        squared_distance += delta * delta;
+      }
+      return squared_distance;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // iterators
