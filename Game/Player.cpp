@@ -52,7 +52,7 @@ void Player::playerUnregisterNotification(Player &player)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerMovementNotification(Player &player, Distance &delta)
 {
-  std::cout << player << " moved by " << delta << " in sight of " << *this << std::endl;
+  //std::cout << player << " moved by " << delta << " in sight of " << *this << std::endl;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

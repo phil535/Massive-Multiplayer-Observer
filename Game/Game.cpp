@@ -4,9 +4,6 @@
 #include <sstream>
 #include <iterator>
 #include <thread>
-#include <algorithm>
-#include <istream>
-#include <cstdlib>
 
 #include "Game.h"
 
