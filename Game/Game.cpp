@@ -1,6 +1,12 @@
 #include <iostream>
-#include <fstream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <iterator>
 #include <thread>
+#include <algorithm>
+#include <istream>
+#include <cstdlib>
 
 #include "Game.h"
 
@@ -46,19 +52,35 @@ int Game::run(const std::vector<std::string> &args)
     std::string input_buffer;
     std::getline(std::cin, input_buffer);
 
-    if (input_buffer == "quit")
+    std::vector<std::string> parameters;
+    std::istringstream iss(input_buffer);
+    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(parameters));
+
+    std::string &command = parameters.at(0);
+
+    if (command == "quit")
     {
       running_ = false;
       break;
     }
-    else if (input_buffer == "add")
+    else if (command == "add")
     {
-      addPlayer();
+      unsigned long player_count = 1;
+      try{player_count = std::stoul(parameters.at(1));}catch(...){}
+      for(;player_count--;)
+        addPlayer();
     }
-    else if (input_buffer == "list")
+    else if (command == "list")
     {
+      if(players_.size() == 0)
+        std::cout << "No players in game." << std::endl;
+
       for (auto &p : players_)
         std::cout << *(p.second) << std::endl;
+    }
+    else
+    {
+      std::cout << "Unknown command." << std::endl;
     }
   }
 
@@ -84,7 +106,7 @@ void Game::addPlayer(Position position, Direction direction)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Game::addPlayer(void)
 {
-  addPlayer(RandomNumberGenerator::instance().getRandomVector({0,0}, board_size_ - 1),
+  addPlayer(RandomNumberGenerator::instance().getRandomVector({0,0}, BOARD_SIZE - 1),
             RandomNumberGenerator::instance().getRandomVector({-1,-1}, {1,1}));
 }
 

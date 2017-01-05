@@ -13,6 +13,7 @@
         var players = [];
         var x;
         var WEBSOCKET_SERVER_LOCATION = 'ws://localhost:8888';
+        var PLAYER_RANGE = 50;
 
         function getPlayerById(id){
             for(var index = 0; index < players.length; ++index){
@@ -26,10 +27,16 @@
             var sprite = game.add.group();
 
             circle = game.add.graphics(10, 10);
-            circle.beginFill((Math.random()*0xFFFFFF), 0.5);
-            circle.drawCircle(0, 0, 50);
-            circle.beginFill(0, 1);
-            circle.drawCircle(0, 0, 2);
+            var color = Math.random()*0xFFFFFF;
+            circle.beginFill(color, 0.2);
+            circle.drawCircle(0, 0, PLAYER_RANGE * 2);
+            circle.endFill();
+            circle.beginFill(color, 1);
+            circle.drawCircle(0, 0, 4);
+            circle.endFill();
+            circle.lineStyle(1, color);
+            circle.drawCircle(0, 0, PLAYER_RANGE * 2);
+
 
             sprite.add(circle);
             sprite.add(game.make.text(0, -8, text, {font: "bold 11px Arial", fill: "red"}));
