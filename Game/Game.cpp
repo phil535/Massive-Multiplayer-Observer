@@ -45,7 +45,7 @@ int Game::run(const std::vector<std::string> &args)
 
   for (;running_;)
   {
-    std::cout << "> ";
+    cout << "> ";
     std::string input_buffer;
     std::getline(std::cin, input_buffer);
 
@@ -70,14 +70,32 @@ int Game::run(const std::vector<std::string> &args)
     else if (command == "list")
     {
       if(players_.size() == 0)
-        std::cout << "No players in game." << std::endl;
+        cout << "No players in game." << endl;
 
       for (auto &p : players_)
-        std::cout << *(p.second) << std::endl;
+        cout << *(p.second) << endl;
+    }
+    else if(command == "debug")
+    {
+      if(players_.size() == 0)
+        cout << "No players in game." << endl;
+
+      for (auto &p : players_)
+      {
+        auto &player = *(p.second);
+        cout << "Player[" << player.getId() << "]: Observers: [";
+        for(auto o : player.getObservers())
+        {
+          if(o != *player.getObservers().begin())
+            cout << ", ";
+          cout << o->getPlayer().getId();
+        }
+        cout << "]" << endl;
+      }
     }
     else
     {
-      std::cout << "Unknown command." << std::endl;
+      cout << "Unknown command." << endl;
     }
   }
 
@@ -97,6 +115,7 @@ int Game::run(const std::vector<std::string> &args)
 void Game::addPlayer(Position position, Direction direction)
 {
   std::unique_ptr<Player> new_player(new Player(*this, position, direction));
+  cout << "Added new: " << *new_player << endl;
   players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
 }
 

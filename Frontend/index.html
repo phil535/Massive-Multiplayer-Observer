@@ -5,15 +5,21 @@
         <title>Massive Multiplayer Observer!</title>
         <script src="js/phaser.min.js"></script>
         <script src="js/jquery.min.js"></script>
+        <style>
+            body{background: #000000;  margin: 0; padding: 0; width:100%}
+            h1{color: lawngreen;  text-align: center;}
+            canvas{margin: auto; border: 2px solid lawngreen;}
+        </style>
     </head>
     <body>
+    <h1>Massive Multiplayer Observer</h1>
     <script type="text/javascript">
         // globals
         var game = undefined;
         var players = [];
         var x;
         var WEBSOCKET_SERVER_LOCATION = 'ws://localhost:8888';
-        var PLAYER_RANGE = 50;
+        var PLAYER_RANGE = 100;
 
         function getPlayerById(id){
             for(var index = 0; index < players.length; ++index){
@@ -22,12 +28,17 @@
             }
             return undefined;
         }
+        function randomColor(){
+            var rgb = [Math.random() * 106 + 150, Math.random() * 106 + 150, Math.random() * 106 + 150];
+            return rgb[2] + rgb[1] * 256 + rgb[0] * 65536;
+        }
+
         function createPlayerSprite(text, x, y){
             if(game == undefined) return undefined;
             var sprite = game.add.group();
 
             circle = game.add.graphics(10, 10);
-            var color = Math.random()*0xFFFFFF;
+            var color = randomColor();
             circle.beginFill(color, 0.2);
             circle.drawCircle(0, 0, PLAYER_RANGE * 2);
             circle.endFill();
@@ -39,7 +50,7 @@
 
 
             sprite.add(circle);
-            sprite.add(game.make.text(0, -8, text, {font: "bold 11px Arial", fill: "red"}));
+            sprite.add(game.make.text(-12, -20, text, {font: "bold 18px Arial", fill: "red"}));
 
             return sprite;
         }
@@ -63,10 +74,17 @@
                 updatePlayer(msg.players[index].id, msg.players[index].x, msg.players[index].y);
             }
         }
+        function preload(){
+            game.load.image('bg', 'img/dark-green-grass-background.jpg');
+        }
+        function create(){
+            bg = game.add.sprite(0,0, 'bg');
+            bg.width = game.width;
+            bg.height = game.height;
+            initWebsocket();
+        }
         $(document).ready(function(){
-            game = new Phaser.Game(800, 800, Phaser.AUTO, 'Massive Multiplayer Observer!', {create: function(){
-                initWebsocket();
-            }});
+            game = new Phaser.Game(800, 800, Phaser.AUTO, 'Massive Multiplayer Observer!', {create: create, preload: preload});
         });
         function initWebsocket(){
             var connection = new WebSocket(WEBSOCKET_SERVER_LOCATION);
@@ -75,8 +93,11 @@
                 parseMessage(JSON.parse(event.data));
             };
             connection.onclose = function(){
-                game.world.removeAll();
-                setTimeout(function(){initWebsocket()}, 3000);
+                for(it in players){
+                    players[it].sprite.destroy();
+                }
+                players = [];
+                setTimeout(function(){initWebsocket()}, 1000);
             };
         }
     </script>

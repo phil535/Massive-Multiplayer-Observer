@@ -41,13 +41,13 @@ void Player::move(Vec2i delta)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerRegisterNotification(Player &player)
 {
-  std::cout << player << " registered " << *this << std::endl;
+  std::cout << "Register notification:   Player[" << player.id_ << "] -> Player[" << id_ << "]" << std::endl << std::flush;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerUnregisterNotification(Player &player)
 {
-  std::cout << player << " unregistered " << *this << std::endl;
+  std::cout << "Unregister notification: Player[" << player.id_ << "] -> Player[" << id_ << "]" << std::endl << std::flush;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerMovementNotification(Player &player, Distance &delta)
