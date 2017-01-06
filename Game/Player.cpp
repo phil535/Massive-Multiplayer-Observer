@@ -41,23 +41,23 @@ void Player::move(Vec2i delta)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerRegisterNotification(Player &player)
 {
-  std::cout << "Register notification:   Player[" << player.id_ << "] -> Player[" << id_ << "]" << std::endl << std::flush;
+  std::cout << "Register notification:   " << player << " -> " << *this << std::endl << std::flush;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerUnregisterNotification(Player &player)
 {
-  std::cout << "Unregister notification: Player[" << player.id_ << "] -> Player[" << id_ << "]" << std::endl << std::flush;
+  std::cout << "Unregister notification: " << player << " -> " << *this << std::endl << std::flush;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerMovementNotification(Player &player, Distance &delta)
 {
-  //std::cout << player << " moved by " << delta << " in sight of " << *this << std::endl;
+  //std::cout << "Movement notification:   " << player << " -> " << *this << std::endl << std::flush;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 std::ostream &operator<<(std::ostream &stream, const Player &rhs)
 {
-  stream << "Player[" << rhs.getId() << "] @" << rhs.getPosition() << " -> " << rhs.getDirection();
+  stream << "Player[" << rhs.getId() << "]";
   return stream;
 }
