@@ -52,15 +52,15 @@ Vec2i LinearMovementPattern::move(Position &current_position)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-HarmonicMovementPattern::HarmonicMovementPattern(Position start_position, Direction direction)
-    : MovementPattern(start_position), phi_(0)
+HarmonicMovementPattern::HarmonicMovementPattern(Direction direction)
+    : MovementPattern(), phi_(0), direction_(direction)
 {
   speed_tick_ = RandomNumberGenerator::instance().getRandomInt(1, 3);
   relative_position_ = Position(0, 0);
-  amplitude_ = RandomNumberGenerator::instance().getRandomInt(5, 25);
+  amplitude_ = RandomNumberGenerator::instance().getRandomInt(2, 15);
 
-  if(direction_.x() && direction.y())
-    direction.y() = 0;
+  if(direction_.x() && direction_.y())
+    direction_.y() = 0;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -105,6 +105,41 @@ Vec2i HarmonicMovementPattern::move(Position & current_position)
     new_pos.y() = 0;
 
   current_position = new_pos;
+  phi_ += 3;
 
+  return current_position - old_pos;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+CircularMovementPattern::CircularMovementPattern()
+    : MovementPattern(), phi_(0)
+{
+  radius_ = RandomNumberGenerator::instance().getRandomInt(4, 20);
+  int tmp_center = start_position_.x() - radius_;
+  if(tmp_center < 0)
+    tmp_center + 2*radius_;
+  center_ = Position(tmp_center, start_position_.y());
+
+  if(RandomNumberGenerator::instance().getRandomInt(0, 1))
+    rotation_ = RotationDirection::CW;
+  else
+    rotation_ = RotationDirection::CCW;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+Vec2i CircularMovementPattern::move(Position & current_position)
+{
+  if(phi_ == 360)
+  {
+    phi_ = 0;
+  }
+  Position old_pos = current_position;
+
+  double x_result, y_result;
+  y_result = radius_ * sin((double)phi_*(double)M_PI/(double)180);
+  x_result = radius_ * cos((double)phi_*(double)M_PI/(double)180);
+
+  current_position = center_ + Position((int)x_result, (int)y_result);
+  phi_ += 3;
   return current_position - old_pos;
 }

@@ -17,6 +17,7 @@ class MovementPattern
       IDLE,
       LINEAR,
       HARMONIC,
+      CIRCULAR,
 
       MAX
     };
@@ -48,15 +49,33 @@ class LinearMovementPattern : public MovementPattern
 class HarmonicMovementPattern : public MovementPattern
 {
   public:
-    HarmonicMovementPattern(Position start_position, Direction direction);
+    HarmonicMovementPattern(Direction direction);
     virtual Vec2i move(Position &current_position);
 
   private:
-    Direction direction_;
     Position relative_position_;
     int phi_;
+    Direction direction_;
     int speed_tick_;
     int amplitude_;
+};
+
+class CircularMovementPattern : public MovementPattern
+{
+  public:
+    CircularMovementPattern();
+    virtual Vec2i move(Position &current_position);
+
+  private:
+    enum RotationDirection
+    {
+      CW,
+      CCW
+    };
+    int phi_;
+    int radius_;
+    Position center_;
+    RotationDirection rotation_;
 };
 
 #endif //GAME_MOVEMENTPATTERN_H
