@@ -71,7 +71,29 @@ int Game::run(const std::vector<std::string> &args)
         addPlayer();
         continue;
       }
-      else if(parameters.size() >= 2)
+      else if(parameters.size() == 2)
+      {
+        int player_count = 0;
+        try
+        {
+          player_count = std::stoul(parameters.at(1));
+          for (; player_count--;)
+          {
+            {
+              std::lock_guard<std::mutex> lock(mutex_players_);
+
+              auto &new_player = addPlayer();
+              new_player.setStrategy(std::unique_ptr<MovementPattern>(
+                  new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
+            }
+          }
+        }
+        catch(...)
+        {
+
+        }
+      }
+      else
       {
         int player_count = 0;
         try{player_count = std::stoul(parameters.at(1));}catch(...){continue;}
@@ -82,8 +104,12 @@ int Game::run(const std::vector<std::string> &args)
           {
             for (; player_count--;)
             {
-              auto &new_player = addPlayer();
-              new_player.setStrategy(std::unique_ptr<MovementPattern>(new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
+              {
+                std::lock_guard<std::mutex> lock(mutex_players_);
+                auto &new_player = addPlayer();
+                new_player.setStrategy(std::unique_ptr<MovementPattern>(
+                    new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
+              }
             }
 
           }
@@ -91,16 +117,22 @@ int Game::run(const std::vector<std::string> &args)
           {
             for (; player_count--;)
             {
-              auto &new_player = addPlayer();
-              //new_player.setStrategy(std::unique_ptr<MovementPattern>(new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
+              {
+                std::lock_guard<std::mutex> lock(mutex_players_);
+                auto &new_player = addPlayer();
+                new_player.setStrategy(std::unique_ptr<MovementPattern>(new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
+              }
             }
           }
           else if(parameters.at(2) == "circular")
           {
             for (; player_count--;)
             {
-              auto &new_player = addPlayer();
-              //new_player.setStrategy(std::unique_ptr<MovementPattern>(new CircularMovementPattern());
+              {
+                std::lock_guard<std::mutex> lock(mutex_players_);
+                auto &new_player = addPlayer();
+                new_player.setStrategy(std::unique_ptr<MovementPattern>(new CircularMovementPattern()));
+              }
             }
           }
           else
@@ -191,8 +223,12 @@ int Game::run(const std::vector<std::string> &args)
 Player &Game::addPlayer(Position position)
 {
   std::unique_ptr<Player> new_player(new Player(*this, position));
+  size_t id = new_player->getId();
   cout << "Added new: " << *new_player << endl;
-  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));}
+  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
+
+  return *(players_[id].get());
+}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 Player &Game::addPlayer(void)
@@ -211,29 +247,33 @@ void Game::update()
 {
   for (;running_;)
   {
-    // move players
-    for (auto &p : players_)
-      (p.second)->move();
-
-    // search for new player range collisions
-    for (auto &pIt1 : players_)
     {
-      for (auto &pIt2 : players_)
-      {
-        // skip selfcompare
-        if(pIt1.second.get() == pIt2.second.get()) continue;
+      std::lock_guard<std::mutex> lock(mutex_players_);
 
-        // check if player in range
-        if(pIt1.second->isInRangeOf(*(pIt2.second)))
+      // move players
+      for (auto &p : players_)
+        (p.second)->move();
+
+      // search for new player range collisions
+      for (auto &pIt1 : players_)
+      {
+        for (auto &pIt2 : players_)
         {
-          pIt1.second->registerPlayerMovementObserver(*(pIt2.second));
-          pIt2.second->registerPlayerMovementObserver(*(pIt1.second));
+          // skip selfcompare
+          if (pIt1.second.get() == pIt2.second.get()) continue;
+
+          // check if player in range
+          if (pIt1.second->isInRangeOf(*(pIt2.second)))
+          {
+            pIt1.second->registerPlayerMovementObserver(*(pIt2.second));
+            pIt2.second->registerPlayerMovementObserver(*(pIt1.second));
+          }
         }
       }
-    }
 
-    // update current state
-    websocket_server_.broadcastMessage(getJsonPlayerState());
+      // update current state
+      websocket_server_.broadcastMessage(getJsonPlayerState());
+    }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(Game::UPDATE_CYCLE_MS));
   }

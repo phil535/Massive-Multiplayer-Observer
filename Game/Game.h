@@ -5,6 +5,7 @@
 #include <map>
 #include <chrono>
 #include <memory>
+#include <mutex>
 
 #include "WebsocketServer.h"
 #include "Types.h"
@@ -49,6 +50,7 @@ class Game
     // Member
   private:
     bool running_;
+    std::mutex mutex_players_;
     std::map<size_t, std::unique_ptr<Player>> players_;
     WebsocketServer websocket_server_;
 };
