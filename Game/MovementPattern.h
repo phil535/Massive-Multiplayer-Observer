@@ -16,6 +16,7 @@ class MovementPattern
     {
       IDLE,
       LINEAR,
+      HARMONIC,
 
       MAX
     };
@@ -23,7 +24,7 @@ class MovementPattern
     MovementPattern(Position start_position);
     virtual Vec2i move(Position &current_position) = 0;
 
-  private:
+  protected:
     Position start_position_;
 };
 
@@ -42,6 +43,20 @@ class LinearMovementPattern : public MovementPattern
 
   private:
     Direction direction_;
+};
+
+class HarmonicMovementPattern : public MovementPattern
+{
+  public:
+    HarmonicMovementPattern(Position start_position, Direction direction);
+    virtual Vec2i move(Position &current_position);
+
+  private:
+    Direction direction_;
+    Position relative_position_;
+    int phi_;
+    int speed_tick_;
+    int amplitude_;
 };
 
 #endif //GAME_MOVEMENTPATTERN_H

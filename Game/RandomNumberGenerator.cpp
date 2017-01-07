@@ -30,13 +30,14 @@ Vec2i RandomNumberGenerator::getRandomVector(Vec2i min_vec, Vec2i max_vec) const
 /*--------------------------------------------------------------------------------------------------------------------*/
 MovementPattern *RandomNumberGenerator::getRandomMovementPattern(Position &start_position)const
 {
-  //switch(getRandomInt(0, (int)MovementPattern::Strategy::MAX - 1))
-  switch((int)MovementPattern::Strategy::LINEAR)
+  switch(getRandomInt(0, (int)MovementPattern::Strategy::MAX - 1))
   {
     case (int)MovementPattern::Strategy::IDLE:
       return new IdleMovementPattern();
     case (int)MovementPattern::Strategy::LINEAR:
       return new LinearMovementPattern(start_position, RandomNumberGenerator::instance().getRandomVector({-1,-1}, {1,1}));
+    case (int) MovementPattern::Strategy ::HARMONIC:
+      return new HarmonicMovementPattern(start_position, RandomNumberGenerator::instance().getRandomVector({-1,-1}, {1,1}));
   }
   return nullptr;
 }
