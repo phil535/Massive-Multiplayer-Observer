@@ -55,6 +55,8 @@ MovementPattern *RandomNumberGenerator::getRandomMovementPattern()const
       return new IdleMovementPattern();
     case (int)MovementPattern::Strategy::LINEAR:
       return new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection());
+  case (int) MovementPattern::Strategy ::HARMONIC:
+      return new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomVector({-1,-1}, {1,1}));
   }
   return nullptr;
 }
