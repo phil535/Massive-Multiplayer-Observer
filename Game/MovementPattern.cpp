@@ -114,10 +114,10 @@ Vec2i HarmonicMovementPattern::move(Position & current_position)
 CircularMovementPattern::CircularMovementPattern()
     : MovementPattern(), phi_(0)
 {
-  radius_ = RandomNumberGenerator::instance().getRandomInt(4, 20);
+  radius_ = RandomNumberGenerator::instance().getRandomInt(25, 200);
   int tmp_center = start_position_.x() - radius_;
   if(tmp_center < 0)
-    tmp_center + 2*radius_;
+    tmp_center += 2*radius_;
   center_ = Position(tmp_center, start_position_.y());
 
   if(RandomNumberGenerator::instance().getRandomInt(0, 1))
@@ -139,7 +139,19 @@ Vec2i CircularMovementPattern::move(Position & current_position)
   y_result = radius_ * sin((double)phi_*(double)M_PI/(double)180);
   x_result = radius_ * cos((double)phi_*(double)M_PI/(double)180);
 
-  current_position = center_ + Position((int)x_result, (int)y_result);
+  Position new_pos((int)x_result, (int)y_result);
+  new_pos = center_ + new_pos;
+
+  if(new_pos.x() < 0)
+    new_pos.x() = Game::BOARD_SIZE.x() + new_pos.x();
+  if(new_pos.x() > Game::BOARD_SIZE.x())
+    new_pos.x() = new_pos.x() - Game::BOARD_SIZE.x();
+  if(new_pos.y() < 0)
+    new_pos.y() = Game::BOARD_SIZE.y() + new_pos.y();
+  if(new_pos.y() > Game::BOARD_SIZE.y())
+    new_pos.y() = new_pos.y() - Game::BOARD_SIZE.y();
+
+  current_position = new_pos;
   phi_ += 3;
   return current_position - old_pos;
 }
