@@ -35,9 +35,8 @@ class Game
   private:
     void update();
 
-    void addPlayer(void);
-    void addPlayer(Position pos);
-
+    Player &addPlayer(void);
+    Player &addPlayer(Position position);
 
     void removePlayer(size_t id);
 

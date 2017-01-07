@@ -47,14 +47,14 @@ Vec2i RandomNumberGenerator::getRandomDirection()const
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-MovementPattern *RandomNumberGenerator::getRandomMovementPattern(Position &start_position)const
+MovementPattern *RandomNumberGenerator::getRandomMovementPattern()const
 {
   switch(getRandomInt(0, (int)MovementPattern::Strategy::MAX - 1))
   {
     case (int)MovementPattern::Strategy::IDLE:
       return new IdleMovementPattern();
     case (int)MovementPattern::Strategy::LINEAR:
-      return new LinearMovementPattern(start_position, RandomNumberGenerator::instance().getRandomDirection());
+      return new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection());
     case (int) MovementPattern::Strategy ::HARMONIC:
       return new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection());
     case (int) MovementPattern::Strategy ::CIRCULAR:

@@ -22,7 +22,10 @@ class MovementPattern
       MAX
     };
   public:
-    MovementPattern(Position start_position);
+    MovementPattern();
+
+    void setStartPosition(Position &start_position){ start_position_ = start_position;}
+
     virtual Vec2i move(Position &current_position) = 0;
 
   protected:
@@ -39,7 +42,7 @@ class IdleMovementPattern : public MovementPattern
 class LinearMovementPattern : public MovementPattern
 {
   public:
-    LinearMovementPattern(Position start_position, Direction direction);
+    LinearMovementPattern(Direction direction);
     virtual Vec2i move(Position &current_position);
 
   private:

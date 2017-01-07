@@ -8,13 +8,13 @@
 #include <cmath>
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-MovementPattern::MovementPattern(Position start_position) : start_position_(start_position)
+MovementPattern::MovementPattern()
 {
 
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-IdleMovementPattern::IdleMovementPattern() : MovementPattern({0,0})
+IdleMovementPattern::IdleMovementPattern()
 {
 }
 
@@ -25,7 +25,7 @@ Vec2i IdleMovementPattern::move(Position &current_position)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-LinearMovementPattern::LinearMovementPattern(Position start_position, Direction direction) : MovementPattern(start_position), direction_(direction)
+LinearMovementPattern::LinearMovementPattern(Direction direction) : direction_(direction)
 {
 
 }

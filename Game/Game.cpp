@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "Game.h"
+#include "MovementPattern.h"
 
 
 using std::cout;
@@ -70,36 +71,44 @@ int Game::run(const std::vector<std::string> &args)
         addPlayer();
         continue;
       }
-
-      unsigned long player_count = 1;
-      try
+      else if(parameters.size() >= 2)
       {
-        player_count = std::stoul(parameters.at(1));
+        int player_count = 0;
+        try{player_count = std::stoul(parameters.at(1));}catch(...){continue;}
 
-        for(;player_count--;)
-          addPlayer();
-      }
-      catch(...){}
-
-
-
-      switch(parameters.size())
-      {
-        case 1:
-          addPlayer();
-          break;
-        case 2:
+        if(parameters.size() >= 3)
         {
-          try{player_count = std::stoul(parameters.at(1));}catch(...){}
-          for(;player_count--;)
-            addPlayer();
-          break;
+          if(parameters.at(2) == "linear")
+          {
+            for (; player_count--;)
+            {
+              auto &new_player = addPlayer();
+              new_player.setStrategy(std::unique_ptr<MovementPattern>(new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
+            }
+
+          }
+          else if(parameters.at(2) == "harmonic")
+          {
+            for (; player_count--;)
+            {
+              auto &new_player = addPlayer();
+              //new_player.setStrategy(std::unique_ptr<MovementPattern>(new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
+            }
+          }
+          else if(parameters.at(2) == "circular")
+          {
+            for (; player_count--;)
+            {
+              auto &new_player = addPlayer();
+              //new_player.setStrategy(std::unique_ptr<MovementPattern>(new CircularMovementPattern());
+            }
+          }
+          else
+          {
+            cout << "Unknown strategy!" << endl;
+          }
         }
-
       }
-
-
-
     }
     else if (command == "list")
     {
@@ -177,18 +186,18 @@ int Game::run(const std::vector<std::string> &args)
   return 0;
 }
 
+
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::addPlayer(Position position)
+Player &Game::addPlayer(Position position)
 {
   std::unique_ptr<Player> new_player(new Player(*this, position));
   cout << "Added new: " << *new_player << endl;
-  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
-}
+  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::addPlayer(void)
+Player &Game::addPlayer(void)
 {
-  addPlayer(RandomNumberGenerator::instance().getRandomVector({0,0}, BOARD_SIZE - 1));
+  return addPlayer(RandomNumberGenerator::instance().getRandomVector({0,0}, BOARD_SIZE - 1));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
