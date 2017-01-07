@@ -11,6 +11,9 @@
 using std::cout;
 using std::endl;
 
+const Size Game::BOARD_SIZE = Size(800, 800);
+
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 Game::Game(void) : running_(false)
 {}
@@ -85,16 +88,16 @@ int Game::run(const std::vector<std::string> &args)
         {
           case 1:
             {
-              addPlayer({400,400},{0,0});
-              addPlayer({200,400},{1,0});
+              addPlayer({400,400});
+              addPlayer({200,400});
             }
             break;
           case 2:
             {
-              addPlayer({0,0},{1,1});
-              addPlayer({799,0},{-1,1});
-              addPlayer({799,799},{-1,-1});
-              addPlayer({0,799},{1,-1});
+              addPlayer({0,0});
+              addPlayer({799,0});
+              addPlayer({799,799});
+              addPlayer({0,799});
             }
             break;
           default:
@@ -144,9 +147,9 @@ int Game::run(const std::vector<std::string> &args)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::addPlayer(Position position, Direction direction)
+void Game::addPlayer(Position position)
 {
-  std::unique_ptr<Player> new_player(new Player(*this, position, direction));
+  std::unique_ptr<Player> new_player(new Player(*this, position));
   cout << "Added new: " << *new_player << endl;
   players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
 }
@@ -154,8 +157,7 @@ void Game::addPlayer(Position position, Direction direction)
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Game::addPlayer(void)
 {
-  addPlayer(RandomNumberGenerator::instance().getRandomVector({0,0}, BOARD_SIZE - 1),
-            RandomNumberGenerator::instance().getRandomVector({-1,-1}, {1,1}));
+  addPlayer(RandomNumberGenerator::instance().getRandomVector({0,0}, BOARD_SIZE - 1));
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -171,7 +173,7 @@ void Game::update()
   {
     // move players
     for (auto &p : players_)
-      (p.second)->move(p.second->getDirection());
+      (p.second)->move();
 
     // search for new player range collisions
     for (auto &pIt1 : players_)

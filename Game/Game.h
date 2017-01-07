@@ -17,7 +17,7 @@ class Game
     // Constants
     const int UPDATE_CYCLE_MS = 20;
   public:
-    const Size BOARD_SIZE = Size(800, 800);
+    static const Size BOARD_SIZE;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
@@ -36,7 +36,7 @@ class Game
     void update();
 
     void addPlayer(void);
-    void addPlayer(Position pos, Position direction);
+    void addPlayer(Position pos);
 
     void removePlayer(size_t id);
 

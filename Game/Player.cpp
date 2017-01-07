@@ -5,13 +5,15 @@ size_t Player::object_counter_;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 Player::Player(Game &game) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this), id_(object_counter_++),
-                       position_(0), direction_(0)
+                       position_(0), movement_strategy_(new IdleMovementPattern)
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(Game &game, Position position, Vec2i direction) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this),
-                                                     id_(object_counter_++), position_(position), direction_(direction)
-{}
+Player::Player(Game &game, Position position) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this),
+                                                     id_(object_counter_++), position_(position), movement_strategy_(RandomNumberGenerator::instance().getRandomMovementPattern(position))
+{
+
+}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 bool Player::isInRangeOf(Player &player) const
@@ -21,18 +23,16 @@ bool Player::isInRangeOf(Player &player) const
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Player::move(Vec2i delta)
+void Player::setStrategy(std::unique_ptr<MovementPattern> strategy)
 {
-  position_ += delta;
+  movement_strategy_.swap(strategy);
+  strategy.reset();
+}
 
-  if(position_.x() < 0)
-    position_.x() = game_.BOARD_SIZE.x() - 1;
-  if(position_.x() > game_.BOARD_SIZE.x())
-    position_.x() = 0;
-  if(position_.y() < 0)
-    position_.y() = game_.BOARD_SIZE.y() - 1;
-  if(position_.y() > game_.BOARD_SIZE.y())
-    position_.y() = 0;
+/*--------------------------------------------------------------------------------------------------------------------*/
+void Player::move()
+{
+  auto delta = movement_strategy_->move(position_);
 
   // notify all observers about player movement
   if(delta != 0) notifyPlayerMovementObservers(delta);
