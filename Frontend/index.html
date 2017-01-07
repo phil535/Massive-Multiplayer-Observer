@@ -32,17 +32,20 @@
             var rgb = [Math.random() * 106 + 150, Math.random() * 106 + 150, Math.random() * 106 + 150];
             return rgb[2] + rgb[1] * 256 + rgb[0] * 65536;
         }
-        function getPlayerObserverText(player){
+        function getPlayerObserverText(observers){
+            if(observers == undefined)
+                return "";
+            console.log(observers);
             var observers_text = "[";
-            for(var it = 0; player.observers.length; it++){
+            for(var it = 0; it < observers.length; it++){
                 if(it != 0) observers_text += ',';
-                observers_text += player.observers[it].toString();
+                observers_text += observers[it];
             }
             observers_text += ']';
             return observers_text;
         }
 
-        function createPlayerSprite(player){
+        function createPlayerSprite(player, observers){
             if(game == undefined) return undefined;
             var sprite = game.add.group();
 
@@ -56,31 +59,32 @@
             circle.endFill();
             circle.lineStyle(1, color, 0.5);
             circle.drawCircle(0, 0, PLAYER_RANGE * 2);
-            
+
             sprite.add(circle);
             sprite.add(game.make.text(-12, -20, 'ID: ' + player.id.toString(), {font: "bold 18px Arial", fill: "red"}));
-            sprite.add(game.make.text(-12, 20, getPlayerObserverText(player), {font: "bold 18px Arial", fill: "green"}));
-
+            sprite.add(game.make.text(-12, 20, getPlayerObserverText(observers), {font: "bold 18px Arial", fill: "lawngreen"}));
             return sprite;
         }
-        function updatePlayer(id, x, y){
+        function updatePlayer(id, x, y, observers){
 
             var player = getPlayerById(id);
             if(player == undefined) {
                 player = {'id': id, 'sprite': undefined};
-                player.sprite = createPlayerSprite(player);
+                player.sprite = createPlayerSprite(player, observers);
                 players.push(player);
             }else{
                 player.sprite.position.x = x;
                 player.sprite.position.y = y;
+                // todo update observers
+                console.log(player.sprite.children[player.sprite.length - 1].setText(getPlayerObserverText(observers)));
             }
         }
         function parseMessage(msg){
             if(msg == undefined || msg.players == undefined) return undefined;
             for(var index = 0; index < msg.players.length; ++index) {
-                if(msg.players[index].id == undefined || msg.players[index].x == undefined || msg.players[index].y == undefined)
+                if(msg.players[index].id == undefined || msg.players[index].x == undefined || msg.players[index].y == undefined || msg.players[index].observers == undefined)
                     return undefined;
-                updatePlayer(msg.players[index].id, msg.players[index].x, msg.players[index].y);
+                updatePlayer(msg.players[index].id, msg.players[index].x, msg.players[index].y, msg.players[index].observers);
             }
         }
         function preload(){

@@ -75,6 +75,38 @@ int Game::run(const std::vector<std::string> &args)
       for (auto &p : players_)
         cout << *(p.second) << endl;
     }
+    else if(command == "test")
+    {
+      unsigned long test_number = 1;
+      try
+      {
+        test_number = std::stoul(parameters.at(1));
+        switch(test_number)
+        {
+          case 1:
+            {
+              addPlayer({400,400},{0,0});
+              addPlayer({200,400},{1,0});
+            }
+            break;
+          case 2:
+            {
+              addPlayer({0,0},{1,1});
+              addPlayer({799,0},{-1,1});
+              addPlayer({799,799},{-1,-1});
+              addPlayer({0,799},{1,-1});
+            }
+            break;
+          default:
+            cout << "Unknown test" << endl;
+            break;
+        }
+      }
+      catch(...)
+      {
+        cout << "usage: test [1-2]" << endl;
+      }
+    }
     else if(command == "debug")
     {
       if(players_.size() == 0)
@@ -190,6 +222,5 @@ std::string Game::getJsonPlayerState() const
     ss << "]}" << endl;
   }
   ss << "]}";
-  cout << ss.str() << endl;
   return ss.str();
 }

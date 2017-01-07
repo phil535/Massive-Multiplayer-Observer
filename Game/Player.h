@@ -23,9 +23,10 @@ class Player : public PlayerMovementSubject, public PlayerMovementObserver
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
-    inline const Position &getPosition(void) const{return position_;}
+    inline Position &getPosition(void){return position_;}
     inline const Direction &getDirection(void) const{return direction_;}
     inline size_t getId() const{return id_;}
+    inline Game &getGame(){return game_;};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods

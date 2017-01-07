@@ -17,7 +17,9 @@ set(SOURCE_FILES
     WebsocketServer.h
     PlayerMovementSubjectObserver.cpp
     PlayerMovementSubjectObserver.h
-    Types.h)
+    Types.h
+    MovementPattern.cpp
+    MovementPattern.h)
 
 include_directories(dependencies/websocketpp)
 
