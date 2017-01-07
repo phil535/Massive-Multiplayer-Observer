@@ -83,14 +83,13 @@ int Game::run(const std::vector<std::string> &args)
               std::lock_guard<std::mutex> lock(mutex_players_);
 
               auto &new_player = addPlayer();
-              new_player.setStrategy(std::unique_ptr<MovementPattern>(
-                  new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
+              new_player.setStrategy(std::unique_ptr<MovementPattern>(RandomNumberGenerator::instance().getRandomMovementPattern()));
             }
           }
         }
         catch(...)
         {
-
+          cout << "usage: add [#] [linear,harmonic,circular]" << endl;
         }
       }
       else
@@ -137,7 +136,7 @@ int Game::run(const std::vector<std::string> &args)
           }
           else
           {
-            cout << "Unknown strategy!" << endl;
+            cout << "usage: add [#] [linear,harmonic,circular]" << endl;
           }
         }
       }
