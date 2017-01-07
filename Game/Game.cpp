@@ -178,8 +178,18 @@ std::string Game::getJsonPlayerState() const
 
     ss << "{\"id\": " << p->second->getId()
     << ",\"x\": " << p->second->getPosition().x()
-    << ",\"y\": " << p->second->getPosition().y() << "}";
+    << ",\"y\": " << p->second->getPosition().y()
+    << ",\"observers\":[";
+
+    for(auto o : p->second->getObservers())
+    {
+      if(o != *(p->second->getObservers().begin()))
+        ss << ", ";
+      ss << o->getPlayer().getId();
+    }
+    ss << "]}" << endl;
   }
   ss << "]}";
+  cout << ss.str() << endl;
   return ss.str();
 }
