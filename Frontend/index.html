@@ -32,8 +32,17 @@
             var rgb = [Math.random() * 106 + 150, Math.random() * 106 + 150, Math.random() * 106 + 150];
             return rgb[2] + rgb[1] * 256 + rgb[0] * 65536;
         }
+        function getPlayerObserverText(player){
+            var observers_text = "[";
+            for(var it = 0; player.observers.length; it++){
+                if(it != 0) observers_text += ',';
+                observers_text += player.observers[it].toString();
+            }
+            observers_text += ']';
+            return observers_text;
+        }
 
-        function createPlayerSprite(text, x, y){
+        function createPlayerSprite(player){
             if(game == undefined) return undefined;
             var sprite = game.add.group();
 
@@ -47,10 +56,10 @@
             circle.endFill();
             circle.lineStyle(1, color, 0.5);
             circle.drawCircle(0, 0, PLAYER_RANGE * 2);
-
-
+            
             sprite.add(circle);
-            sprite.add(game.make.text(-12, -20, text, {font: "bold 18px Arial", fill: "red"}));
+            sprite.add(game.make.text(-12, -20, 'ID: ' + player.id.toString(), {font: "bold 18px Arial", fill: "red"}));
+            sprite.add(game.make.text(-12, 20, getPlayerObserverText(player), {font: "bold 18px Arial", fill: "green"}));
 
             return sprite;
         }
@@ -59,7 +68,7 @@
             var player = getPlayerById(id);
             if(player == undefined) {
                 player = {'id': id, 'sprite': undefined};
-                player.sprite = createPlayerSprite('ID: ' + id.toString(), x, y);
+                player.sprite = createPlayerSprite(player);
                 players.push(player);
             }else{
                 player.sprite.position.x = x;
