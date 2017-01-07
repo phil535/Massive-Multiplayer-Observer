@@ -55,9 +55,9 @@ Vec2i LinearMovementPattern::move(Position &current_position)
 HarmonicMovementPattern::HarmonicMovementPattern(Direction direction)
     : MovementPattern(), phi_(0), direction_(direction)
 {
-  speed_tick_ = RandomNumberGenerator::instance().getRandomInt(1, 3);
+  speed_tick_ = RandomNumberGenerator::instance().getRandomInt(1,2);
   relative_position_ = Position(0, 0);
-  amplitude_ = RandomNumberGenerator::instance().getRandomInt(2, 15);
+  amplitude_ = RandomNumberGenerator::instance().getRandomInt(1, 8);
 
   if(direction_.x() && direction_.y())
     direction_.y() = 0;
@@ -74,7 +74,7 @@ Vec2i HarmonicMovementPattern::move(Position & current_position)
   Position old_pos = current_position;
   Position new_pos;
   double x_result, y_result;
-  y_result = amplitude_ * sin((double)phi_*(double)M_PI/(double)180);
+  y_result = (double)amplitude_ * sin((double)phi_*(double)M_PI/(double)180);
   x_result = relative_position_.x() + speed_tick_;
 
 
@@ -105,7 +105,7 @@ Vec2i HarmonicMovementPattern::move(Position & current_position)
     new_pos.y() = 0;
 
   current_position = new_pos;
-  phi_ += 3;
+  phi_ += 1;
 
   return current_position - old_pos;
 }
@@ -115,10 +115,6 @@ CircularMovementPattern::CircularMovementPattern()
     : MovementPattern(), phi_(0)
 {
   radius_ = RandomNumberGenerator::instance().getRandomInt(25, 200);
-  int tmp_center = start_position_.x() - radius_;
-  if(tmp_center < 0)
-    tmp_center += 2*radius_;
-  center_ = Position(tmp_center, start_position_.y());
 
   if(RandomNumberGenerator::instance().getRandomInt(0, 1))
     rotation_ = RotationDirection::CW;
@@ -129,6 +125,16 @@ CircularMovementPattern::CircularMovementPattern()
 /*--------------------------------------------------------------------------------------------------------------------*/
 Vec2i CircularMovementPattern::move(Position & current_position)
 {
+
+  if (!centered_)
+  {
+    int tmp_center = start_position_.x() - radius_;
+    if (tmp_center < 0)
+      tmp_center += 2 * radius_;
+    center_ = Position(tmp_center, start_position_.y());
+    centered_ = true;
+  }
+
   if(phi_ == 360)
   {
     phi_ = 0;
@@ -152,6 +158,6 @@ Vec2i CircularMovementPattern::move(Position & current_position)
     new_pos.y() = new_pos.y() - Game::BOARD_SIZE.y();
 
   current_position = new_pos;
-  phi_ += 3;
+  phi_ += 1;
   return current_position - old_pos;
 }

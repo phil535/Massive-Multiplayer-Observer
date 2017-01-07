@@ -40,13 +40,13 @@ void Player::move()
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerRegisterNotification(Player &player)
 {
-  std::cout << "Register notification:   " << player << " -> " << *this << std::endl << std::flush;
+  //std::cout << "Register notification:   " << player << " -> " << *this << std::endl << std::flush;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerUnregisterNotification(Player &player)
 {
-  std::cout << "Unregister notification: " << player << " -> " << *this << std::endl << std::flush;
+  //std::cout << "Unregister notification: " << player << " -> " << *this << std::endl << std::flush;
 }
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Player::playerMovementNotification(Player &player, Distance &delta)
