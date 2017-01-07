@@ -79,6 +79,7 @@ class CircularMovementPattern : public MovementPattern
     int radius_;
     Position center_;
     RotationDirection rotation_;
+    bool centered_;
 };
 
 #endif //GAME_MOVEMENTPATTERN_H
