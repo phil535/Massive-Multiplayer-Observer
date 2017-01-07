@@ -65,10 +65,41 @@ int Game::run(const std::vector<std::string> &args)
     }
     else if (command == "add")
     {
-      unsigned long player_count = 1;
-      try{player_count = std::stoul(parameters.at(1));}catch(...){}
-      for(;player_count--;)
+      if(parameters.size() == 1)
+      {
         addPlayer();
+        continue;
+      }
+
+      unsigned long player_count = 1;
+      try
+      {
+        player_count = std::stoul(parameters.at(1));
+
+        for(;player_count--;)
+          addPlayer();
+      }
+      catch(...){}
+
+
+
+      switch(parameters.size())
+      {
+        case 1:
+          addPlayer();
+          break;
+        case 2:
+        {
+          try{player_count = std::stoul(parameters.at(1));}catch(...){}
+          for(;player_count--;)
+            addPlayer();
+          break;
+        }
+
+      }
+
+
+
     }
     else if (command == "list")
     {

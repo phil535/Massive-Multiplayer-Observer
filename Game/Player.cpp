@@ -11,9 +11,7 @@ Player::Player(Game &game) : game_(game), PlayerMovementSubject(*this), PlayerMo
 /*--------------------------------------------------------------------------------------------------------------------*/
 Player::Player(Game &game, Position position) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this),
                                                      id_(object_counter_++), position_(position), movement_strategy_(RandomNumberGenerator::instance().getRandomMovementPattern(position))
-{
-
-}
+{}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 bool Player::isInRangeOf(Player &player) const
