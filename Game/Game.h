@@ -15,7 +15,7 @@ class Game
 {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constants
-    const int UPDATE_CYCLE_MS = 100;
+    const int UPDATE_CYCLE_MS = 20;
   public:
     const Size BOARD_SIZE = Size(800, 800);
 
