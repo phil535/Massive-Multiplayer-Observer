@@ -10,7 +10,7 @@ Player::Player(Game &game) : game_(game), PlayerMovementSubject(*this), PlayerMo
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 Player::Player(Game &game, Position position) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this),
-                                                     id_(object_counter_++), position_(position), movement_strategy_(RandomNumberGenerator::instance().getRandomMovementPattern(position))
+                                                     id_(object_counter_++), position_(position), movement_strategy_(RandomNumberGenerator::instance().getRandomMovementPattern())
 {}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -25,6 +25,7 @@ void Player::setStrategy(std::unique_ptr<MovementPattern> strategy)
 {
   movement_strategy_.swap(strategy);
   strategy.reset();
+  movement_strategy_->setStartPosition(position_);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
