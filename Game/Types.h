@@ -227,6 +227,11 @@ class __attribute__((packed)) _Vec_
     const TYPE &blue()const{ return data_[Vec::BLUE];};
     const TYPE &alpha()const{return data_[Vec::ALPHA];};
 
+    inline TYPE &at(size_t iterator){return data_.at(iterator);}
+    inline TYPE &at(size_t iterator)const{return data_.at(iterator);}
+
+    inline size_t size() const{return SIZE;};
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // methods operator
     void print(std::ostream &stream) const

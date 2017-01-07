@@ -1,6 +1,7 @@
 #include "RandomNumberGenerator.h"
 #include "Game.h"
 
+#include <array>
 #include <cstdlib>
 #include <ctime>
 
@@ -28,15 +29,32 @@ Vec2i RandomNumberGenerator::getRandomVector(Vec2i min_vec, Vec2i max_vec) const
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+Vec2i RandomNumberGenerator::getRandomDirection()const
+{
+  std::array<Vec2i, 8> RANDOM_DIRECTIONS = {
+      {
+          Direction(0, 1),
+          Direction(1, 1),
+          Direction(1, 0),
+          Direction(1,-1),
+          Direction(0, -1),
+          Direction(-1, -1),
+          Direction(-1,0),
+          Direction(-1,1)
+      }};
+
+  return RANDOM_DIRECTIONS.at(getRandomInt(0, 7));
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
 MovementPattern *RandomNumberGenerator::getRandomMovementPattern(Position &start_position)const
 {
-  //switch(getRandomInt(0, (int)MovementPattern::Strategy::MAX - 1))
-  switch((int)MovementPattern::Strategy::LINEAR)
+  switch(getRandomInt(0, (int)MovementPattern::Strategy::MAX - 1))
   {
     case (int)MovementPattern::Strategy::IDLE:
       return new IdleMovementPattern();
     case (int)MovementPattern::Strategy::LINEAR:
-      return new LinearMovementPattern(start_position, RandomNumberGenerator::instance().getRandomVector({-1,-1}, {1,1}));
+      return new LinearMovementPattern(start_position, RandomNumberGenerator::instance().getRandomDirection());
   }
   return nullptr;
 }
