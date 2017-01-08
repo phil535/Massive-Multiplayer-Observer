@@ -94,14 +94,14 @@ int Game::run(const std::vector<std::string> &args)
         }
         else if(strategy == "circular")
         {
-          new_player.setStrategy(new CircularMovementPattern());
+          new_player.setStrategy(new CircularMovementPattern);
         }
         else
         {
           cout << "usage: add [#] [linear,harmonic,circular]" << endl;
           break;
         }
-        cout << "Added new: " << new_player << endl;
+        cout << "New " << new_player << endl;
       }
     }
     else if(command == "remove")
@@ -121,8 +121,6 @@ int Game::run(const std::vector<std::string> &args)
     }
     else if(command == "test")
     {
-      lock_guard<mutex> lock(mutex_players_);
-
       unsigned long test_number = 0;
       try{test_number = std::stoul(cmd_parameters.at(0));}catch(...){}
 
@@ -130,18 +128,46 @@ int Game::run(const std::vector<std::string> &args)
       {
         case 1:
         {
+          lock_guard<mutex> lock(mutex_players_);
           removeAllPlayers();
-          addPlayer({400,400}, new IdleMovementPattern());
+          addPlayer({400,400}, new IdleMovementPattern);
           addPlayer({200,400}, new LinearMovementPattern({1,0}));
           break;
         }
         case 2:
         {
+          lock_guard<mutex> lock(mutex_players_);
           removeAllPlayers();
           addPlayer({0,0}, new LinearMovementPattern({1,1}));
           addPlayer({799,0}, new LinearMovementPattern({-1,1}));
           addPlayer({799,799}, new LinearMovementPattern({-1,-1}));
           addPlayer({0,799}, new LinearMovementPattern({1,-1}));
+          break;
+        }
+        case 3:
+        {
+          {
+            lock_guard<mutex> lock(mutex_players_);
+            removeAllPlayers();
+          }
+          for(int i = 0; i < 6; i++)
+          {
+            {
+              lock_guard<mutex> lock(mutex_players_);
+              addPlayer({550, 400}, new CircularMovementPattern);
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+          }
+          break;
+        }
+        case 4:
+        {
+          {
+            lock_guard<mutex> lock(mutex_players_);
+            removeAllPlayers();
+            addPlayer({50, 400}, new HarmonicMovementPattern({1,0}));
+            addPlayer({50, 400}, new HarmonicMovementPattern({1,0}));
+          }
           break;
         }
         default:

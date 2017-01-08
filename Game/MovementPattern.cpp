@@ -114,7 +114,7 @@ Vec2i HarmonicMovementPattern::move(Position & current_position)
 CircularMovementPattern::CircularMovementPattern()
     : MovementPattern("circular"), phi_(0)
 {
-  radius_ = RandomNumberGenerator::instance().getRandomInt(25, 200);
+  radius_ = RandomNumberGenerator::instance().getRandomInt(50, 300);
 
   if(RandomNumberGenerator::instance().getRandomInt(0, 1))
     rotation_ = RotationDirection::CW;
