@@ -220,6 +220,7 @@ Player &Game::addPlayer(void)
 void Game::removeAllPlayers()
 {
   players_.clear();
+  websocket_server_.broadcastMessage(getJsonPlayerState());
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

@@ -35,7 +35,6 @@
         function getPlayerObserverText(observers){
             if(observers == undefined)
                 return "";
-            console.log(observers);
             var observers_text = "[";
             for(var it = 0; it < observers.length; it++){
                 if(it != 0) observers_text += ',';
@@ -45,7 +44,7 @@
             return observers_text;
         }
 
-        function createPlayerSprite(player, observers){
+        function createPlayerSprite(id, x, y, observers){
             if(game == undefined) return undefined;
             var sprite = game.add.group();
 
@@ -61,44 +60,36 @@
             circle.drawCircle(0, 0, PLAYER_RANGE * 2);
 
             sprite.add(circle);
-            sprite.add(game.make.text(-12, -20, 'ID: ' + player.id.toString(), {font: "bold 18px Arial", fill: "red"}));
+            sprite.add(game.make.text(-12, -20, 'ID: ' + id.toString(), {font: "bold 18px Arial", fill: "red"}));
             sprite.add(game.make.text(-12, 20, getPlayerObserverText(observers), {font: "bold 18px Arial", fill: "lawngreen"}));
+            sprite.position.x = x;
+            sprite.position.y = y;
             return sprite;
         }
-        function clearUpdateFlags(){
-            for(var it = 0; it < players.length; it++){
-                players[it].updated = false;
-            }
-        }
-        function updatePlayer(id, x, y, observers){
-            var player = getPlayerById(id);
-            if(player == undefined) {
-                player = {'id': id, 'sprite': undefined, 'updated': true};
-                player.sprite = createPlayerSprite(player, observers);
-                players.push(player);
-            }else{
-                player.sprite.position.x = x;
-                player.sprite.position.y = y;
-                // update observers
-                player.sprite.children[player.sprite.length - 1].setText(getPlayerObserverText(observers));
-                player.updated = true;
-            }
-        }
         function parseMessage(msg){
-            console.log(msg);
             if(msg == undefined || msg.players == undefined) return undefined;
-            clearUpdateFlags();
+
+            if(msg.players.length == 0){
+                for(it in players){
+                    players[it].sprite.destroy();
+                }
+                players = [];
+            }
+
             for(var it = 0; it < msg.players.length; it++) {
                 if(msg.players[it].id == undefined || msg.players[it].x == undefined || msg.players[it].y == undefined || msg.players[it].observers == undefined)
                     return undefined;
-                updatePlayer(msg.players[it].id, msg.players[it].x, msg.players[it].y, msg.players[it].observers);
-            }
 
-            // remove player if not updated
-            for(var it = players.length - 1; it >= 0; it--){
-                if(!players[it].updated){
-                    players[it].sprite.destroy();
-                    players.splice(splice, 1);
+                var player = getPlayerById(msg.players[it].id);
+                if(player == undefined){
+                    player = {'id': msg.players[it].id, 'sprite': undefined};
+                    player.sprite = createPlayerSprite(msg.players[it].id, msg.players[it].x, msg.players[it].y, msg.players[it].observers);
+                    players.push(player);
+                }else {
+                    player.sprite.position.x = msg.players[it].x;
+                    player.sprite.position.y = msg.players[it].y;
+                    // update observers
+                    player.sprite.children[player.sprite.length - 1].setText(getPlayerObserverText(msg.players[it].observers));
                 }
             }
         }
