@@ -49,6 +49,7 @@ int Game::run(const std::vector<std::string> &args)
     catch(...){}
   }
 
+
   // start gameloop
   std::thread update_thread(std::bind(&Game::update, this));
 
@@ -86,15 +87,15 @@ int Game::run(const std::vector<std::string> &args)
         if(strategy.length() == 0){}
         else if(strategy == "linear")
         {
-          new_player.setStrategy(new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection()));
+          new_player.setStrategy(RandomNumberGenerator::instance().getRandomMovementPattern(MovementPattern::Strategy::LINEAR));
         }
         else if(strategy == "harmonic")
         {
-          new_player.setStrategy(new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection()));
+          new_player.setStrategy(RandomNumberGenerator::instance().getRandomMovementPattern(MovementPattern::Strategy::HARMONIC));
         }
         else if(strategy == "circular")
         {
-          new_player.setStrategy(new CircularMovementPattern);
+          new_player.setStrategy(RandomNumberGenerator::instance().getRandomMovementPattern(MovementPattern::Strategy::CIRCULAR));
         }
         else
         {
@@ -165,8 +166,15 @@ int Game::run(const std::vector<std::string> &args)
           {
             lock_guard<mutex> lock(mutex_players_);
             removeAllPlayers();
-            addPlayer({50, 400}, new HarmonicMovementPattern({1,0}));
-            addPlayer({50, 400}, new HarmonicMovementPattern({1,0}));
+            addPlayer({400, 400}, new HarmonicMovementPattern({0,1}, 100, 50));
+            addPlayer({400, 400}, new HarmonicMovementPattern({1,0}, 100, 50));
+            addPlayer({400, 400}, new HarmonicMovementPattern({0,-1}, 100, 50));
+            addPlayer({400, 400}, new HarmonicMovementPattern({-1,0}, 100, 50));
+
+            addPlayer({400, 400}, new HarmonicMovementPattern({1,1}, 100, 50));
+            addPlayer({400, 400}, new HarmonicMovementPattern({1,-1}, 100, 50));
+            addPlayer({400, 400}, new HarmonicMovementPattern({-1,-1}, 100, 50));
+            addPlayer({400, 400}, new HarmonicMovementPattern({-1,1}, 100, 50));
           }
           break;
         }
@@ -246,43 +254,55 @@ Player &Game::addPlayer(void)
 void Game::removeAllPlayers()
 {
   players_.clear();
+  Player::resetPlayerId();
   websocket_server_.broadcastMessage(getJsonPlayerState());
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 void Game::update()
 {
-  for (;running_;)
+  try
   {
+    for (; running_;)
     {
-      lock_guard<mutex> lock(mutex_players_);
-
-      // move players
-      for (auto &p : players_)
-        (p.second)->move();
-
-      // search for new player range collisions
-      for (auto &pIt1 : players_)
       {
-        for (auto &pIt2 : players_)
-        {
-          // skip selfcompare
-          if (pIt1.second.get() == pIt2.second.get()) continue;
+        lock_guard<mutex> lock(mutex_players_);
 
-          // check if player in range
-          if (pIt1.second->isInRangeOf(*(pIt2.second)))
+        // move players
+        for (auto &p : players_)
+          (p.second)->move();
+
+        // search for new player range collisions
+        for (auto &pIt1 : players_)
+        {
+          for (auto &pIt2 : players_)
           {
-            pIt1.second->registerPlayerMovementObserver(*(pIt2.second));
-            pIt2.second->registerPlayerMovementObserver(*(pIt1.second));
+            // skip selfcompare
+            if (pIt1.second.get() == pIt2.second.get()) continue;
+
+            // check if player in range
+            if (pIt1.second->isInRangeOf(*(pIt2.second)))
+            {
+              pIt1.second->registerPlayerMovementObserver(*(pIt2.second));
+              pIt2.second->registerPlayerMovementObserver(*(pIt1.second));
+            }
           }
         }
+
+        // update current state
+        websocket_server_.broadcastMessage(getJsonPlayerState());
       }
 
-      // update current state
-      websocket_server_.broadcastMessage(getJsonPlayerState());
+      std::this_thread::sleep_for(std::chrono::milliseconds(Game::UPDATE_CYCLE_MS));
     }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(Game::UPDATE_CYCLE_MS));
+  }
+  catch (const std::exception &ex)
+  {
+    std::cout << ex.what() << std::endl;
+  }
+  catch (...)
+  {
+    std::cout << "Unknow exception was caught!" << std::endl;
   }
 }
 

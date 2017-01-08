@@ -7,6 +7,9 @@
 #include "Player.h"
 #include <cmath>
 
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/strategies/transform/matrix_transformers.hpp>
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 MovementPattern::MovementPattern(std::string name) : name_(name)
 {
@@ -39,75 +42,51 @@ Vec2i LinearMovementPattern::move(Position &current_position)
 
   current_position += direction_;
 
-  if(current_position.x() < 0)
-    current_position.x() = Game::BOARD_SIZE.x() - 1;
-  if(current_position.x() > Game::BOARD_SIZE.x())
-    current_position.x() = 0;
-  if(current_position.y() < 0)
-    current_position.y() = Game::BOARD_SIZE.y() - 1;
-  if(current_position.y() > Game::BOARD_SIZE.y())
-    current_position.y() = 0;
+  current_position %= Game::BOARD_SIZE;
+  if(current_position.x() < 0) current_position.x() += Game::BOARD_SIZE.x();
+  if(current_position.y() < 0) current_position.y() += Game::BOARD_SIZE.y();
 
   return current_position - old_position;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-HarmonicMovementPattern::HarmonicMovementPattern(Direction direction)
-    : MovementPattern("harmonic"), phi_(0), direction_(direction)
+HarmonicMovementPattern::HarmonicMovementPattern(Direction direction, size_t amplitude, size_t period)
+    : MovementPattern("harmonic"), phi_(0.0), direction_(direction), amplitude_(amplitude), period_(period), t_(0.0)
 {
-  speed_tick_ = RandomNumberGenerator::instance().getRandomInt(1,2);
-  relative_position_ = Position(0, 0);
-  amplitude_ = RandomNumberGenerator::instance().getRandomInt(1, 8);
-
-  if(direction_.x() && direction_.y())
-    direction_.y() = 0;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Vec2i HarmonicMovementPattern::move(Position & current_position)
+Vec2i HarmonicMovementPattern::move(Position &current_position)
 {
-  if(phi_ == 360)
-  {
-    relative_position_ = Position(0, 0);
-    phi_ = 0;
-  }
-  Position old_pos = current_position;
-  Position new_pos;
-  double x_result, y_result;
-  y_result = (double)amplitude_ * sin((double)phi_*(double)M_PI/(double)180);
-  x_result = relative_position_.x() + speed_tick_;
+  t_ += 1.0;
 
+  if (t_ >= Game::BOARD_SIZE.x())
+    t_ -= Game::BOARD_SIZE.x();
 
-  if(direction_.x() == 1)
-  {
-    new_pos = Position((int)x_result, (int)y_result) + current_position;
-  }
-  else if(direction_.x() == -1)
-  {
-    new_pos = Position(0 - (int)x_result, 0 - (int)y_result) + current_position;
-  }
-  else if(direction_.y() == 1)
-  {
-    new_pos = Position(0 - (int)y_result, (int)x_result) + current_position;
-  }
-  else if(direction_.y() == -1)
-  {
-    new_pos = Position((int)y_result, 0 - (int)x_result) + current_position;
-  }
+  const double frequency = 1.0 / period_;
+  const double omega = 2 * M_PI * frequency;
 
-  if(new_pos.x() < 0)
-    new_pos.x() = Game::BOARD_SIZE.x() - 1;
-  if(new_pos.x() > Game::BOARD_SIZE.x())
-    new_pos.x() = 0;
-  if(new_pos.y() < 0)
-    new_pos.y() = Game::BOARD_SIZE.y() - 1;
-  if(new_pos.y() > Game::BOARD_SIZE.y())
-    new_pos.y() = 0;
+  typedef boost::geometry::model::d2::point_xy<double> point;
+  point sine_point(t_ + start_position_.x(), amplitude_ * std::sin(omega * t_ + phi_) + start_position_.y());
 
-  current_position = new_pos;
-  phi_ += 1;
+  boost::geometry::strategy::transform::translate_transformer<double, 2, 2> translate(sine_point.x(), sine_point.y());
+  boost::geometry::strategy::transform::rotate_transformer<boost::geometry::degree, double, 2, 2> rotate(
+      direction_.degree());
+  boost::geometry::strategy::transform::ublas_transformer<double, 2, 2> translateRotate(
+      prod(rotate.matrix(), translate.matrix()));
 
-  return current_position - old_pos;
+  point new_position(start_position_.x(), start_position_.y());
+  translateRotate.apply(point(0, 0), new_position);
+
+  auto delta = Position(new_position.x(), new_position.y()) - current_position;
+  current_position = Position(new_position.x(), new_position.y());
+
+  current_position %= Game::BOARD_SIZE;
+  if (current_position.x() < 0) current_position.x() += Game::BOARD_SIZE.x();
+  if (current_position.y() < 0) current_position.y() += Game::BOARD_SIZE.y();
+
+  return delta;
+
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

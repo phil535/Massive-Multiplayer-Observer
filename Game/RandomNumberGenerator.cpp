@@ -49,16 +49,27 @@ Vec2i RandomNumberGenerator::getRandomDirection()const
 /*--------------------------------------------------------------------------------------------------------------------*/
 MovementPattern *RandomNumberGenerator::getRandomMovementPattern()const
 {
-  switch(getRandomInt(0, (int)MovementPattern::Strategy::MAX - 1))
+  return instance().getRandomMovementPattern((MovementPattern::Strategy)getRandomInt(0, (int)MovementPattern::Strategy::MAX - 1));
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+MovementPattern *RandomNumberGenerator::getRandomMovementPattern(MovementPattern::Strategy strategy)const
+{
+  switch(strategy)
   {
-    case (int)MovementPattern::Strategy::IDLE:
+    case MovementPattern::Strategy::IDLE:
       return new IdleMovementPattern();
-    case (int)MovementPattern::Strategy::LINEAR:
+    case MovementPattern::Strategy::LINEAR:
       return new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection());
-    case (int) MovementPattern::Strategy::HARMONIC:
-      return new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection());
-    case (int) MovementPattern::Strategy::CIRCULAR:
+    case MovementPattern::Strategy::HARMONIC:
+    {
+      return new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection(),
+                                         RandomNumberGenerator::instance().getRandomInt(25, Game::BOARD_SIZE.x() / 3),
+                                         RandomNumberGenerator::instance().getRandomInt(10, Game::BOARD_SIZE.x() * 4));
+    }
+    case MovementPattern::Strategy::CIRCULAR:
       return new CircularMovementPattern();
   }
   return nullptr;
 }
+

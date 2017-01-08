@@ -54,15 +54,15 @@ class LinearMovementPattern : public MovementPattern
 class HarmonicMovementPattern : public MovementPattern
 {
   public:
-    HarmonicMovementPattern(Direction direction);
+    HarmonicMovementPattern(Direction direction, size_t amplitude, size_t period);
     virtual Vec2i move(Position &current_position);
 
   private:
-    Position relative_position_;
-    int phi_;
     Direction direction_;
-    int speed_tick_;
-    int amplitude_;
+    double amplitude_;
+    double period_;
+    double phi_;
+    double t_;
 };
 
 class CircularMovementPattern : public MovementPattern

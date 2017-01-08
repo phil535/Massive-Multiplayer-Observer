@@ -22,6 +22,8 @@ class RandomNumberGenerator
     Vec2i getRandomVector(Vec2i min, Vec2i max) const;
     Vec2i getRandomDirection()const;
     MovementPattern *getRandomMovementPattern()const;
+    MovementPattern *getRandomMovementPattern(MovementPattern::Strategy strategy)const;
+
 };
 
 #endif //MASSIVE_MULTIPLAYER_OBSERVER_RANDOMNUMBERGENERATOR_H

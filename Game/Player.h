@@ -39,6 +39,7 @@ class Player : public PlayerMovementSubject, public PlayerMovementObserver
     virtual void playerRegisterNotification(Player &player);
     virtual void playerUnregisterNotification(Player &player);
     virtual void playerMovementNotification(Player &player, Distance &delta);
+    static void resetPlayerId(){Player::object_counter_ = 0;};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Member

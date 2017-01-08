@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     Game game;
     return game.run(args);
   }
-  catch (std::exception &ex)
+  catch (const std::exception &ex)
   {
     std::cout << ex.what() << std::endl;
   }

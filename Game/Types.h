@@ -74,17 +74,17 @@ class __attribute__((packed)) _Vec_
     // Arithmetic operator
     _Vec_<TYPE, SIZE> operator+(const _Vec_<TYPE, SIZE> &rhs) const
     {
-      _Vec_<TYPE, SIZE> sum;
+      _Vec_<TYPE, SIZE> result;
       for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] + rhs.data_[i];
-      return sum;
+        result.data_[i] = data_[i] + rhs.data_[i];
+      return result;
     }
     _Vec_<TYPE, SIZE> operator+(const TYPE &value) const
     {
-      _Vec_<TYPE, SIZE> sum;
+      _Vec_<TYPE, SIZE> result;
       for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] + value;
-      return sum;
+        result.data_[i] = data_[i] + value;
+      return result;
     }
     _Vec_<TYPE, SIZE> &operator+=(const _Vec_<TYPE, SIZE> &rhs)
     {
@@ -94,24 +94,23 @@ class __attribute__((packed)) _Vec_
     }
     _Vec_<TYPE, SIZE> &operator+=(const TYPE &value)
     {
-      _Vec_<TYPE, SIZE> sum;
       for(int i = 0; i < data_.size(); i++)
         data_[i] += value;
       return *this;
     }
     _Vec_<TYPE, SIZE> operator-(const _Vec_<TYPE, SIZE> &rhs) const
     {
-      _Vec_<TYPE, SIZE> sum;
+      _Vec_<TYPE, SIZE> result;
       for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] - rhs.data_[i];
-      return sum;
+        result.data_[i] = data_[i] - rhs.data_[i];
+      return result;
     }
     _Vec_<TYPE, SIZE> operator-(const TYPE &value) const
     {
-      _Vec_<TYPE, SIZE> sum;
+      _Vec_<TYPE, SIZE> result;
       for(int i = 0; i < data_.size(); i++)
-        sum.data_[i] = data_[i] - value;
-      return sum;
+        result.data_[i] = data_[i] - value;
+      return result;
     }
     _Vec_<TYPE, SIZE> &operator-=(const _Vec_<TYPE, SIZE> &rhs)
     {
@@ -126,7 +125,58 @@ class __attribute__((packed)) _Vec_
         data_[i] -= value;
       return *this;
     }
-
+    _Vec_<TYPE, SIZE> operator*(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      _Vec_<TYPE, SIZE> result;
+      for(int i = 0; i < data_.size(); i++)
+        result.data_[i] = data_[i] * rhs.data_[i];
+      return result;
+    }
+    _Vec_<TYPE, SIZE> operator*(const TYPE &value) const
+    {
+      _Vec_<TYPE, SIZE> result;
+      for(int i = 0; i < data_.size(); i++)
+        result.data_[i] = data_[i] * value;
+      return result;
+    }
+    _Vec_<TYPE, SIZE> &operator*=(const _Vec_<TYPE, SIZE> &rhs)
+    {
+      for(int i = 0; i < data_.size(); i++)
+        data_[i] *= rhs.data_[i];
+      return *this;
+    }
+    _Vec_<TYPE, SIZE> &operator*=(const TYPE &value)
+    {
+      for(int i = 0; i < data_.size(); i++)
+        data_[i] *= value;
+      return *this;
+    }
+    _Vec_<TYPE, SIZE> operator/(const _Vec_<TYPE, SIZE> &rhs) const
+    {
+      _Vec_<TYPE, SIZE> result;
+      for(int i = 0; i < data_.size(); i++)
+        result.data_[i] = data_[i] / rhs.data_[i];
+      return result;
+    }
+    _Vec_<TYPE, SIZE> operator/(const TYPE &value) const
+    {
+      _Vec_<TYPE, SIZE> result;
+      for(int i = 0; i < data_.size(); i++)
+        result.data_[i] = data_[i] / value;
+      return result;
+    }
+    _Vec_<TYPE, SIZE> &operator/=(const _Vec_<TYPE, SIZE> &rhs)
+    {
+      for(int i = 0; i < data_.size(); i++)
+        data_[i] /= rhs.data_[i];
+      return *this;
+    }
+    _Vec_<TYPE, SIZE> &operator/=(const TYPE &value)
+    {
+      for(int i = 0; i < data_.size(); i++)
+        data_[i] /= value;
+      return *this;
+    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Comparison operators
     bool operator==(const _Vec_<TYPE, SIZE> &rhs) const
@@ -202,6 +252,15 @@ class __attribute__((packed)) _Vec_
       return true;
     }
 
+
+
+    _Vec_<TYPE, SIZE> &operator%=(const _Vec_<TYPE, SIZE> &rhs)
+    {
+      for(int i = 0; i < data_.size(); i++)
+        data_[i] %= rhs.data_[i];
+      return *this;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
     TYPE &width(){ return data_[Vec::WIDTH];};
@@ -231,6 +290,8 @@ class __attribute__((packed)) _Vec_
     inline TYPE &at(size_t iterator)const{return data_.at(iterator);}
 
     inline size_t size() const{return SIZE;};
+
+    inline double degree()const{return std::atan2(data_[1], data_[0]) * 180.0 / M_PI;};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // methods operator
@@ -265,6 +326,15 @@ class __attribute__((packed)) _Vec_
         squared_distance += delta * delta;
       }
       return squared_distance;
+    }
+    double dot(const _Vec_<TYPE, SIZE> &rhs)const
+    {
+      double dot = 0.0;
+      for(int i = 0; i < data_.size(); i++)
+      {
+        dot += data_[i] * rhs.data_[i];
+      }
+      return dot;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
