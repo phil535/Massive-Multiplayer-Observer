@@ -8,13 +8,13 @@
 #include <cmath>
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-MovementPattern::MovementPattern()
+MovementPattern::MovementPattern(std::string name) : name_(name)
 {
 
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-IdleMovementPattern::IdleMovementPattern()
+IdleMovementPattern::IdleMovementPattern() : MovementPattern("idle")
 {
 }
 
@@ -25,7 +25,7 @@ Vec2i IdleMovementPattern::move(Position &current_position)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-LinearMovementPattern::LinearMovementPattern(Direction direction) : direction_(direction)
+LinearMovementPattern::LinearMovementPattern(Direction direction) : MovementPattern("linear"), direction_(direction)
 {
 
 }
@@ -53,7 +53,7 @@ Vec2i LinearMovementPattern::move(Position &current_position)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 HarmonicMovementPattern::HarmonicMovementPattern(Direction direction)
-    : MovementPattern(), phi_(0), direction_(direction)
+    : MovementPattern("harmonic"), phi_(0), direction_(direction)
 {
   speed_tick_ = RandomNumberGenerator::instance().getRandomInt(1,2);
   relative_position_ = Position(0, 0);
@@ -112,7 +112,7 @@ Vec2i HarmonicMovementPattern::move(Position & current_position)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 CircularMovementPattern::CircularMovementPattern()
-    : MovementPattern(), phi_(0)
+    : MovementPattern("circular"), phi_(0)
 {
   radius_ = RandomNumberGenerator::instance().getRandomInt(25, 200);
 

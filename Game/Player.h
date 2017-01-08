@@ -20,15 +20,14 @@ class Player : public PlayerMovementSubject, public PlayerMovementObserver
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
   public:
-    Player(Game &game);
-    Player(Game &game, Position position);
+    Player(Game &game, Position position, MovementPattern *strategy);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
     inline Position &getPosition(void){return position_;}
     inline size_t getId() const{return id_;}
     inline Game &getGame(){return game_;};
-    void setStrategy(std::unique_ptr<MovementPattern> strategy);
+    void setStrategy(MovementPattern *strategy);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods

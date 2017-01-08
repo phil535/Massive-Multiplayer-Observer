@@ -4,6 +4,9 @@
 #include <sstream>
 #include <iterator>
 #include <thread>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
+
 
 #include "Game.h"
 #include "MovementPattern.h"
@@ -11,6 +14,8 @@
 
 using std::cout;
 using std::endl;
+using std::mutex;
+using std::lock_guard;
 
 const Size Game::BOARD_SIZE = Size(800, 800);
 
@@ -53,96 +58,61 @@ int Game::run(const std::vector<std::string> &args)
     std::string input_buffer;
     std::getline(std::cin, input_buffer);
 
-    std::vector<std::string> parameters;
-    std::istringstream iss(input_buffer);
-    std::copy(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>(), std::back_inserter(parameters));
+    std::vector<std::string> cmd_parameters;
+    boost::split(cmd_parameters, input_buffer, boost::is_any_of(" \t\r\n"));
 
-    std::string &command = parameters.at(0);
+    // split into command and parameters
+    std::string command(cmd_parameters.front());
+    std::transform(command.begin(), command.end(), command.begin(), ::tolower);
 
-    if (command == "quit")
+    cmd_parameters.erase(cmd_parameters.begin());
+
+    if(command == "add")
     {
-      running_ = false;
-      break;
-    }
-    else if (command == "add")
-    {
-      if(parameters.size() == 1)
+      int player_count = 1;
+      std::string strategy;
+
+      try
       {
-        addPlayer();
-        continue;
-      }
-      else if(parameters.size() == 2)
+        player_count = std::stoul(cmd_parameters.at(0));
+        strategy = cmd_parameters.at(1);
+      }catch(...){}
+
+      for (; player_count--;)
       {
-        int player_count = 0;
-        try
+        lock_guard<mutex> lock(mutex_players_);
+        auto &new_player = addPlayer();
+
+        if(strategy.length() == 0){}
+        else if(strategy == "linear")
         {
-          player_count = std::stoul(parameters.at(1));
-          for (; player_count--;)
-          {
-            {
-              std::lock_guard<std::mutex> lock(mutex_players_);
-
-              auto &new_player = addPlayer();
-              new_player.setStrategy(std::unique_ptr<MovementPattern>(RandomNumberGenerator::instance().getRandomMovementPattern()));
-            }
-          }
+          new_player.setStrategy(new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection()));
         }
-        catch(...)
+        else if(strategy == "harmonic")
+        {
+          new_player.setStrategy(new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection()));
+        }
+        else if(strategy == "circular")
+        {
+          new_player.setStrategy(new CircularMovementPattern());
+        }
+        else
         {
           cout << "usage: add [#] [linear,harmonic,circular]" << endl;
+          break;
         }
+        cout << "Added new: " << new_player << endl;
       }
-      else
-      {
-        int player_count = 0;
-        try{player_count = std::stoul(parameters.at(1));}catch(...){continue;}
-
-        if(parameters.size() >= 3)
-        {
-          if(parameters.at(2) == "linear")
-          {
-            for (; player_count--;)
-            {
-              {
-                std::lock_guard<std::mutex> lock(mutex_players_);
-                auto &new_player = addPlayer();
-                new_player.setStrategy(std::unique_ptr<MovementPattern>(
-                    new LinearMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
-              }
-            }
-
-          }
-          else if(parameters.at(2) == "harmonic")
-          {
-            for (; player_count--;)
-            {
-              {
-                std::lock_guard<std::mutex> lock(mutex_players_);
-                auto &new_player = addPlayer();
-                new_player.setStrategy(std::unique_ptr<MovementPattern>(new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection())));
-              }
-            }
-          }
-          else if(parameters.at(2) == "circular")
-          {
-            for (; player_count--;)
-            {
-              {
-                std::lock_guard<std::mutex> lock(mutex_players_);
-                auto &new_player = addPlayer();
-                new_player.setStrategy(std::unique_ptr<MovementPattern>(new CircularMovementPattern()));
-              }
-            }
-          }
-          else
-          {
-            cout << "usage: add [#] [linear,harmonic,circular]" << endl;
-          }
-        }
-      }
+    }
+    else if(command == "remove")
+    {
+      lock_guard<mutex> lock(mutex_players_);
+      removeAllPlayers();
     }
     else if (command == "list")
     {
+      lock_guard<mutex> lock(mutex_players_);
+
       if(players_.size() == 0)
         cout << "No players in game." << endl;
 
@@ -151,38 +121,40 @@ int Game::run(const std::vector<std::string> &args)
     }
     else if(command == "test")
     {
-      unsigned long test_number = 1;
-      try
+      lock_guard<mutex> lock(mutex_players_);
+
+      unsigned long test_number = 0;
+      try{test_number = std::stoul(cmd_parameters.at(0));}catch(...){}
+
+      switch(test_number)
       {
-        test_number = std::stoul(parameters.at(1));
-        switch(test_number)
+        case 1:
         {
-          case 1:
-            {
-              addPlayer({400,400});
-              addPlayer({200,400});
-            }
-            break;
-          case 2:
-            {
-              addPlayer({0,0});
-              addPlayer({799,0});
-              addPlayer({799,799});
-              addPlayer({0,799});
-            }
-            break;
-          default:
-            cout << "Unknown test" << endl;
-            break;
+          removeAllPlayers();
+          addPlayer({400,400}, new IdleMovementPattern());
+          addPlayer({200,400}, new LinearMovementPattern({1,0}));
+          break;
         }
-      }
-      catch(...)
-      {
-        cout << "usage: test [1-2]" << endl;
+        case 2:
+        {
+          removeAllPlayers();
+          addPlayer({0,0}, new LinearMovementPattern({1,1}));
+          addPlayer({799,0}, new LinearMovementPattern({-1,1}));
+          addPlayer({799,799}, new LinearMovementPattern({-1,-1}));
+          addPlayer({0,799}, new LinearMovementPattern({1,-1}));
+          break;
+        }
+        default:
+        {
+          cout << "usage: test [1-2]" << endl;
+          break;
+        }
       }
     }
     else if(command == "debug")
     {
+      lock_guard<mutex> lock(mutex_players_);
+
       if(players_.size() == 0)
         cout << "No players in game." << endl;
 
@@ -199,13 +171,21 @@ int Game::run(const std::vector<std::string> &args)
         cout << "]" << endl;
       }
     }
+    else if(command == "quit")
+    {
+      running_ = false;
+      break;
+    }
     else
     {
       cout << "Unknown command." << endl;
     }
   }
 
-  players_.clear();
+  {
+    lock_guard<mutex> lock(mutex_players_);
+    players_.clear();
+  }
 
   // stop gameloop
   update_thread.join();
@@ -217,16 +197,17 @@ int Game::run(const std::vector<std::string> &args)
   return 0;
 }
 
-
+Player &Game::addPlayer(Position position, MovementPattern *strategy)
+{
+  std::unique_ptr<Player> new_player(new Player(*this, position, strategy));
+  size_t id = new_player->getId();
+  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
+  return *(players_[id]);
+}
 /*--------------------------------------------------------------------------------------------------------------------*/
 Player &Game::addPlayer(Position position)
 {
-  std::unique_ptr<Player> new_player(new Player(*this, position));
-  size_t id = new_player->getId();
-  cout << "Added new: " << *new_player << endl;
-  players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
-
-  return *(players_[id].get());
+  return addPlayer(position, RandomNumberGenerator::instance().getRandomMovementPattern());
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -236,9 +217,9 @@ Player &Game::addPlayer(void)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::removePlayer(size_t id)
+void Game::removeAllPlayers()
 {
-  players_.erase(id);
+  players_.clear();
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -247,7 +228,7 @@ void Game::update()
   for (;running_;)
   {
     {
-      std::lock_guard<std::mutex> lock(mutex_players_);
+      lock_guard<mutex> lock(mutex_players_);
 
       // move players
       for (auto &p : players_)

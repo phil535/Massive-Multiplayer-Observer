@@ -38,8 +38,10 @@ class Game
 
     Player &addPlayer(void);
     Player &addPlayer(Position position);
+    Player &addPlayer(Position position, MovementPattern *strategy);
 
-    void removePlayer(size_t id);
+
+    void removeAllPlayers();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter

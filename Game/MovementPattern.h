@@ -22,13 +22,15 @@ class MovementPattern
       MAX
     };
   public:
-    MovementPattern();
+    MovementPattern(std::string name);
 
     void setStartPosition(Position &start_position){ start_position_ = start_position;}
 
+    const std::string &getName()const{return name_;};
     virtual Vec2i move(Position &current_position) = 0;
 
   protected:
+    std::string name_;
     Position start_position_;
 };
 

@@ -4,14 +4,10 @@
 size_t Player::object_counter_;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(Game &game) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this), id_(object_counter_++),
-                       position_(0), movement_strategy_(new IdleMovementPattern)
-{}
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(Game &game, Position position) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this),
-                                                     id_(object_counter_++), position_(position), movement_strategy_(RandomNumberGenerator::instance().getRandomMovementPattern())
-{}
+Player::Player(Game &game, Position position, MovementPattern *strategy) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this),
+                                                                          id_(object_counter_++), position_(position), movement_strategy_(strategy)
+{
+}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 bool Player::isInRangeOf(Player &player) const
@@ -21,11 +17,12 @@ bool Player::isInRangeOf(Player &player) const
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Player::setStrategy(std::unique_ptr<MovementPattern> strategy)
+void Player::setStrategy(MovementPattern *strategy)
 {
-  movement_strategy_.swap(strategy);
-  strategy.reset();
-  movement_strategy_->setStartPosition(position_);
+  movement_strategy_.reset(strategy);
+
+  if(movement_strategy_.get() != nullptr)
+    movement_strategy_->setStartPosition(position_);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -57,6 +54,7 @@ void Player::playerMovementNotification(Player &player, Distance &delta)
 /*--------------------------------------------------------------------------------------------------------------------*/
 std::ostream &operator<<(std::ostream &stream, const Player &rhs)
 {
-  stream << "Player[" << rhs.getId() << "]";
+  stream << "Player[" << rhs.getId() << "] " << rhs.position_;
+  if(rhs.movement_strategy_) stream << " " << rhs.movement_strategy_->getName();
   return stream;
 }
