@@ -63,6 +63,7 @@ class HarmonicMovementPattern : public MovementPattern
     double period_;
     double phi_;
     double t_;
+    long periods_;
 };
 
 class CircularMovementPattern : public MovementPattern
@@ -82,6 +83,7 @@ class CircularMovementPattern : public MovementPattern
     Position center_;
     RotationDirection rotation_;
     bool centered_;
+
 };
 
 #endif //GAME_MOVEMENTPATTERN_H

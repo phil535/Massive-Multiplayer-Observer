@@ -51,23 +51,27 @@ Vec2i LinearMovementPattern::move(Position &current_position)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 HarmonicMovementPattern::HarmonicMovementPattern(Direction direction, size_t amplitude, size_t period)
-    : MovementPattern("harmonic"), phi_(0.0), direction_(direction), amplitude_(amplitude), period_(period), t_(0.0)
+    : MovementPattern("harmonic"), phi_(0.0), direction_(direction), amplitude_(amplitude), period_(period), t_(0.0), periods_(0)
 {
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 Vec2i HarmonicMovementPattern::move(Position &current_position)
 {
-  t_ += 1.0;
-
-  if (t_ >= Game::BOARD_SIZE.x())
-    t_ -= Game::BOARD_SIZE.x();
 
   const double frequency = 1.0 / period_;
   const double omega = 2 * M_PI * frequency;
 
+  if (t_ == period_)
+  {
+    periods_++;
+    t_ = 0;
+  }
+
+  double arg = omega * t_;
+
   typedef boost::geometry::model::d2::point_xy<double> point;
-  point sine_point(t_ + start_position_.x(), amplitude_ * std::sin(omega * t_ + phi_) + start_position_.y());
+  point sine_point(t_ + start_position_.x() + periods_ * period_, amplitude_ * std::sin(omega * t_ + phi_) + start_position_.y());
 
   boost::geometry::strategy::transform::translate_transformer<double, 2, 2> translate(sine_point.x(), sine_point.y());
   boost::geometry::strategy::transform::rotate_transformer<boost::geometry::degree, double, 2, 2> rotate(
@@ -84,6 +88,8 @@ Vec2i HarmonicMovementPattern::move(Position &current_position)
   current_position %= Game::BOARD_SIZE;
   if (current_position.x() < 0) current_position.x() += Game::BOARD_SIZE.x();
   if (current_position.y() < 0) current_position.y() += Game::BOARD_SIZE.y();
+
+  t_ += 1;
 
   return delta;
 
