@@ -34,14 +34,12 @@ class Game
   public:
     int run(const std::vector<std::string> &args);
   private:
-    void update();
+    void update(void);
 
     Player &addPlayer(void);
     Player &addPlayer(Position position);
     Player &addPlayer(Position position, MovementPattern *strategy);
-
-
-    void removeAllPlayers();
+    void removeAllPlayers(void);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
@@ -56,6 +54,5 @@ class Game
     std::map<size_t, std::unique_ptr<Player>> players_;
     WebsocketServer websocket_server_;
 };
-
 
 #endif //MASSIVE_MULTIPLAYER_OBSERVER_GAME_H

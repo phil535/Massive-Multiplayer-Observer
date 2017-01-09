@@ -10,14 +10,18 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/strategies/transform/matrix_transformers.hpp>
 
+typedef boost::geometry::model::d2::point_xy<double> BoostPoint2d;
+using boost::geometry::strategy::transform::translate_transformer;
+using boost::geometry::strategy::transform::rotate_transformer;
+using boost::geometry::strategy::transform::ublas_transformer;
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 MovementPattern::MovementPattern(std::string name) : name_(name)
 {
-
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-IdleMovementPattern::IdleMovementPattern() : MovementPattern("idle")
+IdleMovementPattern::IdleMovementPattern(void) : MovementPattern("idle")
 {
 }
 
@@ -30,7 +34,6 @@ Vec2i IdleMovementPattern::move(Position &current_position)
 /*--------------------------------------------------------------------------------------------------------------------*/
 LinearMovementPattern::LinearMovementPattern(Direction direction) : MovementPattern("linear"), direction_(direction)
 {
-
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -51,7 +54,7 @@ Vec2i LinearMovementPattern::move(Position &current_position)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 HarmonicMovementPattern::HarmonicMovementPattern(Direction direction, size_t amplitude, size_t period)
-    : MovementPattern("harmonic"), phi_(0.0), direction_(direction), amplitude_(amplitude), period_(period), t_(0.0)
+    : MovementPattern("harmonic"), direction_(direction), amplitude_(amplitude), period_(period), phi_(0.0), t_(0.0)
 {
 }
 
@@ -65,19 +68,20 @@ Vec2i HarmonicMovementPattern::move(Position &current_position)
 
   const double frequency = 1.0 / period_;
   const double omega = 2 * M_PI * frequency;
+  BoostPoint2d sine_point(t_, -amplitude_ * std::sin(omega * t_ + phi_)); // negative value to invert y-axis
 
-  typedef boost::geometry::model::d2::point_xy<double> Point2d;
-  Point2d sine_point(t_, -amplitude_ * std::sin(omega * t_ + phi_));
+  translate_transformer<double, 2, 2> sine_translation(sine_point.x(), sine_point.y());
+  rotate_transformer<boost::geometry::radian, double, 2, 2> rotate(direction_.radian());
 
-  Point2d new_position;
-  boost::geometry::strategy::transform::translate_transformer<double, 2, 2> sine_translation(sine_point.x(), sine_point.y());
-  boost::geometry::strategy::transform::rotate_transformer<boost::geometry::radian, double, 2, 2> rotate(direction_.radian());
+  ublas_transformer<double, 2, 2> translateRotate(prod(rotate.matrix(), sine_translation.matrix()));
+  BoostPoint2d translate_rotate_position;
+  translateRotate.apply(BoostPoint2d(0.0, 0.0), translate_rotate_position);
 
-  boost::geometry::strategy::transform::ublas_transformer<double, 2, 2> translateRotate(prod(rotate.matrix(), sine_translation.matrix()));
-  translateRotate.apply(Point2d(0.0, 0.0), new_position);
+  Vec2i new_position(static_cast<int>(translate_rotate_position.x() + start_position_.x()),
+                     static_cast<int>(translate_rotate_position.y() + start_position_.y()));
 
-  auto delta = Position(new_position.x() + start_position_.x(), new_position.y() + start_position_.y()) - current_position;
-  current_position = Position(new_position.x() + start_position_.x(), new_position.y() + start_position_.y());
+  Vec2i delta = current_position - new_position;
+  current_position = new_position;
 
   current_position %= Game::BOARD_SIZE;
   if (current_position.x() < 0) current_position.x() += Game::BOARD_SIZE.x();
@@ -87,7 +91,7 @@ Vec2i HarmonicMovementPattern::move(Position &current_position)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-CircularMovementPattern::CircularMovementPattern()
+CircularMovementPattern::CircularMovementPattern(void)
     : MovementPattern("circular"), phi_(0)
 {
   radius_ = RandomNumberGenerator::instance().getRandomInt(50, 300);
@@ -118,8 +122,8 @@ Vec2i CircularMovementPattern::move(Position & current_position)
   Position old_pos = current_position;
 
   double x_result, y_result;
-  y_result = radius_ * sin((double)phi_*(double)M_PI/(double)180);
-  x_result = radius_ * cos((double)phi_*(double)M_PI/(double)180);
+  y_result = radius_ * sin((double)phi_*(double)M_PI / (double)180);
+  x_result = radius_ * cos((double)phi_*(double)M_PI / (double)180);
 
   Position new_pos((int)x_result, (int)y_result);
   new_pos = center_ + new_pos;

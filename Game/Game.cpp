@@ -11,14 +11,12 @@
 #include "Game.h"
 #include "MovementPattern.h"
 
-
 using std::cout;
 using std::endl;
 using std::mutex;
 using std::lock_guard;
 
 const Size Game::BOARD_SIZE = Size(800, 800);
-
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 Game::Game(void) : running_(false)
@@ -198,7 +196,7 @@ int Game::run(const std::vector<std::string> &args)
         }
         default:
         {
-          cout << "usage: test [1-2]" << endl;
+          cout << "usage: test [1-5]" << endl;
           break;
         }
       }
@@ -251,7 +249,7 @@ int Game::run(const std::vector<std::string> &args)
 
 Player &Game::addPlayer(Position position, MovementPattern *strategy)
 {
-  std::unique_ptr<Player> new_player(new Player(*this, position, strategy));
+  std::unique_ptr<Player> new_player(new Player(position, strategy));
   size_t id = new_player->getId();
   players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
   return *(players_[id]);
@@ -269,7 +267,7 @@ Player &Game::addPlayer(void)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::removeAllPlayers()
+void Game::removeAllPlayers(void)
 {
   players_.clear();
   Player::resetPlayerId();
@@ -277,7 +275,7 @@ void Game::removeAllPlayers()
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::update()
+void Game::update(void)
 {
   try
   {
@@ -325,7 +323,7 @@ void Game::update()
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-std::string Game::getJsonPlayerState() const
+std::string Game::getJsonPlayerState(void) const
 {
   std::stringstream ss;
 

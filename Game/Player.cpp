@@ -4,8 +4,10 @@
 size_t Player::object_counter_;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-Player::Player(Game &game, Position position, MovementPattern *strategy) : game_(game), PlayerMovementSubject(*this), PlayerMovementObserver(*this),
-                                                                          id_(object_counter_++), position_(position), movement_strategy_(strategy)
+Player::Player(Position position, MovementPattern *strategy) : PlayerMovementSubject(*this),
+                                                                           PlayerMovementObserver(*this),
+                                                                           id_(object_counter_++), position_(position),
+                                                                           movement_strategy_(strategy)
 {
   if(movement_strategy_)
     movement_strategy_->setStartPosition(position_);
@@ -28,7 +30,7 @@ void Player::setStrategy(MovementPattern *strategy)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Player::move()
+void Player::move(void)
 {
   auto delta = movement_strategy_->move(position_);
 
