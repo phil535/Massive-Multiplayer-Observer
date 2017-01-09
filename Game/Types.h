@@ -292,6 +292,7 @@ class __attribute__((packed)) _Vec_
     inline size_t size() const{return SIZE;};
 
     inline double degree()const{return std::atan2(data_[1], data_[0]) * 180.0 / M_PI;};
+    inline double radian()const{return std::atan2(data_[1], data_[0]);};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // methods operator
@@ -335,6 +336,11 @@ class __attribute__((packed)) _Vec_
         dot += data_[i] * rhs.data_[i];
       }
       return dot;
+    }
+    double length()const
+    {
+      const _Vec_<TYPE, SIZE> zero(0);
+      return euclideanDistance(zero);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

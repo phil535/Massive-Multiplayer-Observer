@@ -64,8 +64,8 @@ MovementPattern *RandomNumberGenerator::getRandomMovementPattern(MovementPattern
     case MovementPattern::Strategy::HARMONIC:
     {
       return new HarmonicMovementPattern(RandomNumberGenerator::instance().getRandomDirection(),
-                                         RandomNumberGenerator::instance().getRandomInt(25, Game::BOARD_SIZE.x() / 3),
-                                         RandomNumberGenerator::instance().getRandomInt(10, Game::BOARD_SIZE.x() * 4));
+                                         RandomNumberGenerator::instance().getRandomInt(100, Game::BOARD_SIZE.x() / 3),
+                                         RandomNumberGenerator::instance().getRandomInt(50, Game::BOARD_SIZE.x() * 2));
     }
     case MovementPattern::Strategy::CIRCULAR:
       return new CircularMovementPattern();

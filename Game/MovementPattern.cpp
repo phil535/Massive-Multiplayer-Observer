@@ -58,35 +58,32 @@ HarmonicMovementPattern::HarmonicMovementPattern(Direction direction, size_t amp
 /*--------------------------------------------------------------------------------------------------------------------*/
 Vec2i HarmonicMovementPattern::move(Position &current_position)
 {
-  t_ += 1.0;
+  t_ += direction_.length();
 
-  if (t_ >= Game::BOARD_SIZE.x())
-    t_ -= Game::BOARD_SIZE.x();
+  if (t_ >= Game::BOARD_SIZE.x() * Game::BOARD_SIZE.y())
+    t_ -= period_;
 
   const double frequency = 1.0 / period_;
   const double omega = 2 * M_PI * frequency;
 
-  typedef boost::geometry::model::d2::point_xy<double> point;
-  point sine_point(t_ + start_position_.x(), amplitude_ * std::sin(omega * t_ + phi_) + start_position_.y());
+  typedef boost::geometry::model::d2::point_xy<double> Point2d;
+  Point2d sine_point(t_, -amplitude_ * std::sin(omega * t_ + phi_));
 
-  boost::geometry::strategy::transform::translate_transformer<double, 2, 2> translate(sine_point.x(), sine_point.y());
-  boost::geometry::strategy::transform::rotate_transformer<boost::geometry::degree, double, 2, 2> rotate(
-      direction_.degree());
-  boost::geometry::strategy::transform::ublas_transformer<double, 2, 2> translateRotate(
-      prod(rotate.matrix(), translate.matrix()));
+  Point2d new_position;
+  boost::geometry::strategy::transform::translate_transformer<double, 2, 2> sine_translation(sine_point.x(), sine_point.y());
+  boost::geometry::strategy::transform::rotate_transformer<boost::geometry::radian, double, 2, 2> rotate(direction_.radian());
 
-  point new_position(start_position_.x(), start_position_.y());
-  translateRotate.apply(point(0, 0), new_position);
+  boost::geometry::strategy::transform::ublas_transformer<double, 2, 2> translateRotate(prod(rotate.matrix(), sine_translation.matrix()));
+  translateRotate.apply(Point2d(0.0, 0.0), new_position);
 
-  auto delta = Position(new_position.x(), new_position.y()) - current_position;
-  current_position = Position(new_position.x(), new_position.y());
+  auto delta = Position(new_position.x() + start_position_.x(), new_position.y() + start_position_.y()) - current_position;
+  current_position = Position(new_position.x() + start_position_.x(), new_position.y() + start_position_.y());
 
   current_position %= Game::BOARD_SIZE;
   if (current_position.x() < 0) current_position.x() += Game::BOARD_SIZE.x();
   if (current_position.y() < 0) current_position.y() += Game::BOARD_SIZE.y();
 
   return delta;
-
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

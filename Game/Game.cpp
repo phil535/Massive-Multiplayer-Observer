@@ -85,6 +85,10 @@ int Game::run(const std::vector<std::string> &args)
         auto &new_player = addPlayer();
 
         if(strategy.length() == 0){}
+        else if(strategy == "idle")
+        {
+          new_player.setStrategy(RandomNumberGenerator::instance().getRandomMovementPattern(MovementPattern::Strategy::IDLE));
+        }
         else if(strategy == "linear")
         {
           new_player.setStrategy(RandomNumberGenerator::instance().getRandomMovementPattern(MovementPattern::Strategy::LINEAR));
@@ -175,6 +179,20 @@ int Game::run(const std::vector<std::string> &args)
             addPlayer({400, 400}, new HarmonicMovementPattern({1,-1}, 100, 50));
             addPlayer({400, 400}, new HarmonicMovementPattern({-1,-1}, 100, 50));
             addPlayer({400, 400}, new HarmonicMovementPattern({-1,1}, 100, 50));
+          }
+          break;
+        }
+        case 5:
+        {
+          {
+            lock_guard<mutex> lock(mutex_players_);
+            removeAllPlayers();
+            for(int xIt = 0; xIt < 5; xIt++)
+              for(int yIt = 0; yIt < 5; yIt++)
+              {
+                addPlayer({xIt * 150 + 100, yIt * 150 + 100}, new IdleMovementPattern);
+              }
+            addPlayer({400, 400}, new CircularMovementPattern);
           }
           break;
         }
