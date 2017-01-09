@@ -20,31 +20,29 @@ class Player : public PlayerMovementSubject, public PlayerMovementObserver
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
   public:
-    Player(Game &game, Position position, MovementPattern *strategy);
+    Player(Position position, MovementPattern *strategy);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Getter / Setter
     inline Position &getPosition(void){return position_;}
-    inline size_t getId() const{return id_;}
-    inline Game &getGame(){return game_;};
+    inline size_t getId(void) const{return id_;}
     void setStrategy(MovementPattern *strategy);
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Methods
     bool isInRangeOf(Player &player) const;
-    void move();
+    void move(void);
 
     friend std::ostream &operator<<(std::ostream &stream, const Player &rhs);
 
     virtual void playerRegisterNotification(Player &player);
     virtual void playerUnregisterNotification(Player &player);
     virtual void playerMovementNotification(Player &player, Distance &delta);
-    static void resetPlayerId(){Player::object_counter_ = 0;};
+    static void resetPlayerId(void){Player::object_counter_ = 0;};
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Member
   private:
-    Game &game_;
     size_t id_;
     Position position_;
     static size_t object_counter_;

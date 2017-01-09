@@ -11,14 +11,12 @@
 #include "Game.h"
 #include "MovementPattern.h"
 
-
 using std::cout;
 using std::endl;
 using std::mutex;
 using std::lock_guard;
 
 const Size Game::BOARD_SIZE = Size(800, 800);
-
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 Game::Game(void) : running_(false)
@@ -85,6 +83,10 @@ int Game::run(const std::vector<std::string> &args)
         auto &new_player = addPlayer();
 
         if(strategy.length() == 0){}
+        else if(strategy == "idle")
+        {
+          new_player.setStrategy(RandomNumberGenerator::instance().getRandomMovementPattern(MovementPattern::Strategy::IDLE));
+        }
         else if(strategy == "linear")
         {
           new_player.setStrategy(RandomNumberGenerator::instance().getRandomMovementPattern(MovementPattern::Strategy::LINEAR));
@@ -178,9 +180,23 @@ int Game::run(const std::vector<std::string> &args)
           }
           break;
         }
+        case 5:
+        {
+          {
+            lock_guard<mutex> lock(mutex_players_);
+            removeAllPlayers();
+            for(int xIt = 0; xIt < 5; xIt++)
+              for(int yIt = 0; yIt < 5; yIt++)
+              {
+                addPlayer({xIt * 150 + 100, yIt * 150 + 100}, new IdleMovementPattern);
+              }
+            addPlayer({400, 400}, new CircularMovementPattern);
+          }
+          break;
+        }
         default:
         {
-          cout << "usage: test [1-2]" << endl;
+          cout << "usage: test [1-5]" << endl;
           break;
         }
       }
@@ -233,7 +249,7 @@ int Game::run(const std::vector<std::string> &args)
 
 Player &Game::addPlayer(Position position, MovementPattern *strategy)
 {
-  std::unique_ptr<Player> new_player(new Player(*this, position, strategy));
+  std::unique_ptr<Player> new_player(new Player(position, strategy));
   size_t id = new_player->getId();
   players_.insert(std::make_pair(new_player->getId(), std::move(new_player)));
   return *(players_[id]);
@@ -251,7 +267,7 @@ Player &Game::addPlayer(void)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::removeAllPlayers()
+void Game::removeAllPlayers(void)
 {
   players_.clear();
   Player::resetPlayerId();
@@ -259,7 +275,7 @@ void Game::removeAllPlayers()
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void Game::update()
+void Game::update(void)
 {
   try
   {
@@ -307,7 +323,7 @@ void Game::update()
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-std::string Game::getJsonPlayerState() const
+std::string Game::getJsonPlayerState(void) const
 {
   std::stringstream ss;
 

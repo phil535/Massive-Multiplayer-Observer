@@ -9,9 +9,9 @@ class RandomNumberGenerator
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Constructor / Deconstructor
   public:
-    static RandomNumberGenerator &instance();
+    static RandomNumberGenerator &instance(void);
   private:
-    RandomNumberGenerator();
+    RandomNumberGenerator(void);
     RandomNumberGenerator(const RandomNumberGenerator &rhs);
     RandomNumberGenerator &operator=(const RandomNumberGenerator &rhs);
 
@@ -20,9 +20,9 @@ class RandomNumberGenerator
   public:
     int getRandomInt(int min, int max) const;
     Vec2i getRandomVector(Vec2i min, Vec2i max) const;
-    Vec2i getRandomDirection()const;
-    MovementPattern *getRandomMovementPattern()const;
-    MovementPattern *getRandomMovementPattern(MovementPattern::Strategy strategy)const;
+    Vec2i getRandomDirection(void) const;
+    MovementPattern *getRandomMovementPattern(void) const;
+    MovementPattern *getRandomMovementPattern(MovementPattern::Strategy strategy) const;
 
 };
 

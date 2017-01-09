@@ -22,7 +22,7 @@ class WebsocketServer
     // Methods
   public:
     void run(int port);
-    void stop();
+    void stop(void);
 
   private:
     void onOpen(websocketpp::connection_hdl hdl);

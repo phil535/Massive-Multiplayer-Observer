@@ -6,6 +6,7 @@ using websocketpp::lib::mutex;
 using websocketpp::lib::lock_guard;
 using websocketpp::connection_hdl;
 
+/*--------------------------------------------------------------------------------------------------------------------*/
 WebsocketServer::WebsocketServer()
 {
   server_.init_asio();
@@ -39,7 +40,7 @@ void WebsocketServer::run(int port)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-void WebsocketServer::stop()
+void WebsocketServer::stop(void)
 {
   server_.get_io_service().stop();
 }
