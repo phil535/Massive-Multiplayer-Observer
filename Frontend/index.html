@@ -33,7 +33,7 @@
             return rgb[2] + rgb[1] * 256 + rgb[0] * 65536;
         }
         function getPlayerObserverText(observers){
-            if(observers == undefined)
+            if(observers == undefined || observers.length == 0)
                 return "";
             var observers_text = "[";
             for(var it = 0; it < observers.length; it++){
